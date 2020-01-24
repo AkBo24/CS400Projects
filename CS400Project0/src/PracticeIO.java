@@ -6,11 +6,11 @@ import java.util.Scanner;
 
 public class PracticeIO {
     private static final Scanner num = new Scanner(System.in);
-    private static final File logger = new File("Log.txt");
+    private static final File log = new File("Log.txt");
 
     public static void main(String[] args) {
-        String kPlay = "";
         
+        String kPlay = "";
         int uNum = 0;
         
         System.out.print("Welcome to Akshay Bodla's Project0\n");
@@ -23,6 +23,8 @@ public class PracticeIO {
             System.out.println("Option 2: Write a story?");
             
             try {
+                PrintWriter logger = new PrintWriter(log);
+                
                 uNum = num.nextInt();
                 while(!validate(uNum, 1, 2)) {
                     System.out.println("enter a number between 1-2");
@@ -35,9 +37,14 @@ public class PracticeIO {
                 else if(uNum == 2)
                     writeStory();
                 
+                logger.println("Finished one cycle");
+                logger.close();
                 
             } catch (java.util.InputMismatchException e) {
                 System.out.println("Input mismatch");
+            } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
             
             kPlay = keepPlaying(num, kPlay);            
@@ -45,6 +52,7 @@ public class PracticeIO {
         } while(!kPlay.equals("exit"));
         
         num.close();
+        
     }
 
     private static void writeStory() {
@@ -55,6 +63,8 @@ public class PracticeIO {
         String story = num.nextLine();
         
         try {
+            PrintWriter logger = new PrintWriter(log);
+
             File gameFile = new File(story);
             gameFile.createNewFile();
             
@@ -70,6 +80,7 @@ public class PracticeIO {
             
             readStory(gameFile);
             
+            logger.println("Successfully wrote one story!");
         }
         catch(IOException e) {
             e.printStackTrace();
@@ -92,7 +103,7 @@ public class PracticeIO {
         System.out.println();
     }
 
-    private static void playGuessingGame() {
+    private static void playGuessingGame() throws FileNotFoundException {
         int randNum = (int)(Math.random()*10)+1,
             uGuess  = 0;
         int guess = 5;
@@ -109,6 +120,10 @@ public class PracticeIO {
              
              if(uGuess == randNum) {
                  System.out.println("Congrats! You guessed the correct number");
+                 
+                 PrintWriter logger = new PrintWriter(log);
+                 logger.println("User did guess the right number!");
+                 logger.close();
                  return;
              }
              
@@ -117,6 +132,11 @@ public class PracticeIO {
                  System.out.println("You have " + --guess + " guess's left");
              }
         }
+        
+        PrintWriter logger = new PrintWriter(log);
+        logger.println("User did not guess the write number!");
+        logger.close();
+        
         System.out.println();
     }
 

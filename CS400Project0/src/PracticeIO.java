@@ -17,7 +17,6 @@ public class PracticeIO {
         System.out.println("===== email: bodla@wisc.edu ======");
         System.out.println("======= Lecture Number: 001 ======");
         
-        
         do {
             System.out.println("\n\nWhat would you like to do(enter a number between 1-2)");
             System.out.println("Option 1: Play a guessing game!");
@@ -29,6 +28,7 @@ public class PracticeIO {
                     System.out.println("enter a number between 1-2");
                     uNum = num.nextInt();
                 }
+                System.out.println();
                 
                 if(uNum == 1)
                     playGuessingGame();
@@ -48,28 +48,31 @@ public class PracticeIO {
     }
 
     private static void writeStory() {
-        // TODO Auto-generated method stub
-        System.out.println("what would you like to call this story?");
-        num.nextLine();
-        String name = num.nextLine();
-        System.out.println("name:" + name);
         
-        readStory(new File("Prompt.txt"));
+        readStory(new File("Input"));
+        
+        num.nextLine();
         String story = num.nextLine();
         
         try {
-            File gameFile = new File(name);
+            File gameFile = new File(story);
             gameFile.createNewFile();
             
-            PrintWriter pw = new PrintWriter(gameFile);
+            PrintWriter pw = new PrintWriter(gameFile);            
 
-            pw.println(story);
+            pw.println(story + ":");
+            pw.println("We had done it!  The AI successfully created human emotions.");
+            
+            System.out.println("Now, how will you end our sentence?");
+            String end = num.nextLine();
+            pw.println(end);
             pw.close();
             
             readStory(gameFile);
+            
         }
         catch(IOException e) {
-            System.out.println("IOException");
+            e.printStackTrace();
         }
     }
 

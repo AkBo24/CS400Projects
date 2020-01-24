@@ -57,7 +57,7 @@ public class PracticeIO {
 
     private static void writeStory() {
         
-        readStory(new File("Input"));
+        readStory(new File("Input.txt"));
         
         num.nextLine();
         String story = num.nextLine();
@@ -142,9 +142,6 @@ public class PracticeIO {
 
     private static String keepPlaying(Scanner in, String kPlay) {
         System.out.println("Would you like to keep exploring? Exit to stop");
-        
-        if(in.hasNext())
-            in.nextLine();
 
         kPlay = in.nextLine();
         kPlay = kPlay.toLowerCase();

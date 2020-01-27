@@ -1,2 +1,3 @@
-Here's your story:
+Here's your 2-sentence story, titled: Story.txt
 We had done it!  The AI successfully created human emotions.
+Sentence!

@@ -1,3 +1,4 @@
+
 // TO TEST A DATA STRUCTURE CLASS:
 //
 // for each data structure class file you wish to test:
@@ -15,5 +16,4 @@ public class TestDS_My extends DataStructureADTTest {
     protected DataStructureADT createInstance() {
         return new DS_My();
     }
-
 }

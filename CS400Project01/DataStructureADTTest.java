@@ -28,7 +28,6 @@ abstract class DataStructureADTTest<T extends DataStructureADT<String,String>> {
         ds = null;
     }
 
-    
     @Test
     void test00_empty_ds_size() {
         if (ds.size() != 0)
@@ -67,7 +66,6 @@ abstract class DataStructureADTTest<T extends DataStructureADT<String,String>> {
         }
         catch (RuntimeException re) { }
         assert (ds.size()==2);
-
     }
             
     
@@ -138,8 +136,26 @@ abstract class DataStructureADTTest<T extends DataStructureADT<String,String>> {
     }
     
     @Test
-    void test09_remove_correctly_changes_pointers() {
+    void test09_contains_returns_true() {
+        ds.insert("1", "one");
+        ds.insert("2", "two");
+        ds.insert("3", "three");
         
+        boolean contains = ds.contains("3");
+        
+        if(!contains)
+            fail("ds.contains(\"3\") returns: " + contains + "whent it should have returned" + !contains);
+        assert(ds.contains("3"));
+    }
+    
+    @Test
+    void test10_contains_returns_false() {
+        ds.insert("1", "one");
+        boolean contains = !ds.contains("3");
+        
+        if(contains)
+            fail("ds.contains(\"3\") returns: " + contains + "whent it should have returned" + !contains);
+        assert(!ds.contains("3"));
     }
     
     // Tip: consider different numbers of inserts and removes and how different combinations of insert and removes

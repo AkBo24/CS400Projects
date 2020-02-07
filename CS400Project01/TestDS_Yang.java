@@ -1,4 +1,3 @@
-
 // TO TEST A DATA STRUCTURE CLASS:
 //
 // for each data structure class file you wish to test:
@@ -9,11 +8,12 @@
 //        Eclipse: Run->Run Configurations->"Run All Tests..."
 
 @SuppressWarnings("rawtypes")
-public class TestDS_My extends DataStructureADTTest {
+public class TestDS_Yang extends DataStructureADTTest {
 
     // the return type must be the name of the data structure class you are testing
     @Override
     protected DataStructureADT createInstance() {
-        return new DS_My();
+        return new DS_Deb();
     }
+
 }

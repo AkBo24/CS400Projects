@@ -18,6 +18,36 @@ public class DS_My implements DataStructureADT< String, String > {
         
     }
 
+    @Override
+    public void insert(String key, String value) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public boolean remove(String key) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public String get(String key) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean contains(String key) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public int size() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
     // TODO: add unimplemented methods
     // ProTip: Eclipse can do this for you
 

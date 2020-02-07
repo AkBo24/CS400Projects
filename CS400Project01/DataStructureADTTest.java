@@ -13,12 +13,10 @@ abstract class DataStructureADTTest<T extends DataStructureADT<String,String>> {
     protected abstract T createInstance();
 
     @BeforeAll
-    static void setUpBeforeClass() throws Exception {
-    }
+    static void setUpBeforeClass() throws Exception {}
 
     @AfterAll
-    static void tearDownAfterClass() throws Exception {
-    }
+    static void tearDownAfterClass() throws Exception {}
 
     @BeforeEach
     void setUp() throws Exception {
@@ -34,7 +32,7 @@ abstract class DataStructureADTTest<T extends DataStructureADT<String,String>> {
     @Test
     void test00_empty_ds_size() {
         if (ds.size() != 0)
-        fail("data structure should be empty, with size=0, but size="+ds.size());
+            fail("data structure should be empty, with size=0, but size="+ds.size());
     }
     
     // TODO: review tests 01 - 04
@@ -69,6 +67,7 @@ abstract class DataStructureADTTest<T extends DataStructureADT<String,String>> {
         }
         catch (RuntimeException re) { }
         assert (ds.size()==2);
+
     }
             
     
@@ -85,8 +84,63 @@ abstract class DataStructureADTTest<T extends DataStructureADT<String,String>> {
 
     
     // TODO: add tests 05 - 07 as described in assignment
+    
+    @Test
+    void test05_insert_remove_one() {
+        String key   = "1",
+               value = "one";
+        
+        ds.insert(key, value);
+        assert(ds.remove(key));
+        if(ds.remove(key))
+            fail("remove("+key+ ") returned " + ds.get(key) + " which should have been removed");
+    }
+    
+    @Test
+    void test06_insert_many_size() {
+      for(int i = 0; i < 10; i++)
+          ds.insert(""+i, ""+i);
+  
+      if(!(ds.size()==10))
+          fail("Size is not correct");
+      
+      assert(ds.size()==10);
+    }
+    
+    @Test
+    void test07_duplicate_values() {
+      String key1  = "1",
+             key2  = "2",
+             value = "one";
+      
+      ds.insert(key1, value);
+      ds.insert(key2, value);
+      
+      assert(ds.contains(key2));
+      if(!ds.contains(key2))
+          fail("did not insert a new key value pair with a duplicate value but different key");
+    }
 
     // TODO: add more tests of your own design to ensure that you can detect implementation that fail
+    
+    @Test
+    void test08_insert_null_key_value() {
+        String key   = null,
+               value = null;
+        
+        try {
+            ds.insert(key, value);
+            fail("did not throw a null pointer exception");
+        }
+        catch(NullPointerException e) { }
+        
+        assert(true);
+    }
+    
+    @Test
+    void test09_remove_correctly_changes_pointers() {
+        
+    }
     
     // Tip: consider different numbers of inserts and removes and how different combinations of insert and removes
 

@@ -35,7 +35,6 @@ abstract class DataStructureADTTest<T extends DataStructureADT<String,String>> {
     }
     
     // TODO: review tests 01 - 04
-
     @Test
     void test01_insert_one() {
         String key = "1";
@@ -74,35 +73,41 @@ abstract class DataStructureADTTest<T extends DataStructureADT<String,String>> {
         String key = "1";
         String value = "one";
         ds.insert(key, value);
+        
+        
         assert (!ds.remove("2")); // remove non-existent key is false
-        assert (ds.remove(key));  // remove existing key is true
         if (ds.get(key)!=null)
             fail("get("+key+ ") returned " + ds.get(key) + " which should have been removed");
     }
 
-    
+ 
     // TODO: add tests 05 - 07 as described in assignment
     
     @Test
     void test05_insert_remove_one() {
+        
         String key   = "1",
                value = "one";
         
         ds.insert(key, value);
-        assert(ds.remove(key));
-        if(ds.remove(key))
-            fail("remove("+key+ ") returned " + ds.get(key) + " which should have been removed");
+        ds.remove("1");
+  
+        assert(ds.contains("1") == false);
+        if(ds.contains("1"))
+            fail("remove did not successfully remove the node called by remove(1)");
     }
     
     @Test
     void test06_insert_many_size() {
-      for(int i = 0; i < 10; i++)
-          ds.insert(""+i, ""+i);
-  
-      if(!(ds.size()==10))
-          fail("Size is not correct");
-      
-      assert(ds.size()==10);
+        ds.insert("1", "one");
+        ds.insert("3", "three");
+        ds.insert("2", "two");
+
+        int size = ds.size();
+        
+        if(size != 3)
+            fail("inserting 3 nodes, failed, current size: " + size);
+        assert(size==3);
     }
     
     @Test
@@ -144,17 +149,18 @@ abstract class DataStructureADTTest<T extends DataStructureADT<String,String>> {
         boolean contains = ds.contains("3");
         
         if(!contains)
-            fail("ds.contains(\"3\") returns: " + contains + "whent it should have returned" + !contains);
+            fail("ds.contains(\"3\") returns: " + contains + " when it should have returned " + !contains);
         assert(ds.contains("3"));
     }
     
     @Test
     void test10_contains_returns_false() {
         ds.insert("1", "one");
-        boolean contains = !ds.contains("3");
+
+        boolean contains = ds.contains("3");
         
         if(contains)
-            fail("ds.contains(\"3\") returns: " + contains + "whent it should have returned" + !contains);
+            fail("ds.contains(\"3\") returns: " + contains + " when it should have returned " + !contains);
         assert(!ds.contains("3"));
     }
     

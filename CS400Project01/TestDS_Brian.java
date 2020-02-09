@@ -13,7 +13,7 @@ public class TestDS_Brian extends DataStructureADTTest {
     // the return type must be the name of the data structure class you are testing
     @Override
     protected DataStructureADT createInstance() {
-        return new DS_Deb();
+        return new DS_Brian();
     }
 
 }

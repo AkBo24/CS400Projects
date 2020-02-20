@@ -16,13 +16,21 @@ import java.util.List;
  */
 public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
     
+    private KeyValuePair root;
+    int size;
+   
+    public BST() {
+        root  = null;
+        size = 0;
+    }
+    
     /**
      * Returns the key that is in the root node of this ST.
      * If root is null, returns null.
      * @return key found at root node, or null
      */
     public K getKeyAtRoot() {
-        return null;
+        return root.key;
     }
     
     /**
@@ -137,9 +145,21 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      * Do not increase the num of keys in the structure, if key,value pair is not added.
      */
     public void insert(K key, V value) throws IllegalNullKeyException, DuplicateKeyException {
+        
+        if(key == null) throw new IllegalNullKeyException("Key is null");
+        if(contains(key)) throw new  DuplicateKeyException("Key exisits in tree");
+        
+        //if key is not null or not in the tree insert!
+        KeyValuePair kvp = new KeyValuePair(key, value);
+        insert(kvp, root);
+        
+        size++;
         return;
     }
     
+    private void insert(KeyValuePair kvp, KeyValuePair n) {
+        
+    }
     
 
     /** 
@@ -149,6 +169,9 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      * If key is null, throw IllegalNullKeyException
      */
     public boolean remove(K key) throws IllegalNullKeyException {
+        if(key == null) throw new IllegalNullKeyException("Key is null");
+        
+        size--;
         return false;
     }
 
@@ -160,6 +183,8 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      * If key is not found, throw KeyNotFoundException().
      */
     public V get(K key) throws IllegalNullKeyException, KeyNotFoundException {
+        if(key == null) throw new IllegalNullKeyException("Key is null");
+        if(contains(key)) throw new KeyNotFoundException();
         return null;
     }
 
@@ -168,7 +193,8 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      * If key is null, throw IllegalNullKeyException 
      * Returns false if key is not null and is not present 
      */
-    public boolean contains(K key) throws IllegalNullKeyException { 
+    public boolean contains(K key) throws IllegalNullKeyException {
+        if(key == null) throw new IllegalNullKeyException("Key is null");
         return false;
     }
 
@@ -176,7 +202,7 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      *  Returns the number of key,value pairs in the data structure
      */
     public int numKeys() {
-        return 0;
+        return size;
     }
     
     
@@ -229,6 +255,29 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      */
     public void print() {
         System.out.println("not yet implemented");
+    }
+    
+    @SuppressWarnings("unused")
+    private class KeyValuePair {
+        private K key; //Key
+        private V val; //Value
+        
+        private KeyValuePair lChild; //Left Child
+        private KeyValuePair rChild; //Right Child
+        
+        private KeyValuePair() {
+            key    = null;
+            val    = null;
+            lChild = null;
+            rChild = null;
+        }
+
+        public KeyValuePair(K key, V val) {
+            this.key = key;
+            this.val = val;
+            lChild  = null;
+            rChild  = null;
+        }
     }
     
 } // copyrighted material, students do not have permission to post on public sites

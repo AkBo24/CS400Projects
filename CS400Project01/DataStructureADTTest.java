@@ -1,3 +1,27 @@
+/**
+ * DataStructureADTTest.java created by akshaybodla on MacBook Pro in CS400Project01
+ * 
+ * Author: Akshay Bodla (bodla@wisc.edu)
+ * Date: @date
+ * 
+ * Course: CS400
+ * Semester: Spring 2020
+ * Lecture: 001
+ * 
+ * IDE: Eclipse IDE for Java Developers
+ * 
+ * Version: 2019-06 (4.12.0)
+ * Build id: 20190614-1200
+ * 
+ * Device:  Akshay's Macbook Pro
+ * OS    :  macOS High Sierra
+ * Version: Version 10.13.6
+ * 
+ * List Collaborators: N/A
+ * 
+ * Other Credits: N/A
+ */
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.AfterAll;
@@ -6,6 +30,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Class to test my implementation of a BST
+ * @author akshaybodla
+ *
+ * @param <T>
+ */
 abstract class DataStructureADTTest<T extends DataStructureADT<String,String>> {
     
     private T ds;
@@ -28,11 +58,15 @@ abstract class DataStructureADTTest<T extends DataStructureADT<String,String>> {
         ds = null;
     }
 
+    /**
+     * Tests if ds is instantiated with size = 0
+     */
     @Test
     void test00_empty_ds_size() {
         if (ds.size() != 0)
             fail("data structure should be empty, with size=0, but size="+ds.size());
     }
+    
     
     // TODO: review tests 01 - 04
     @Test
@@ -46,6 +80,9 @@ abstract class DataStructureADTTest<T extends DataStructureADT<String,String>> {
         catch (RuntimeException e) {assert (ds.contains(key)) ;}
     }
     
+    /**
+     * Tests insert operation
+     */
     @Test
     void test02_insert_remove_one_size_0() {
         String key = "1";
@@ -61,6 +98,9 @@ abstract class DataStructureADTTest<T extends DataStructureADT<String,String>> {
 
     }
     
+    /**
+     * Tests if duplicate is not allowed in BST
+     */
     @Test
     void test03_duplicate_exception_thrown() {
         String key = "1";
@@ -75,7 +115,9 @@ abstract class DataStructureADTTest<T extends DataStructureADT<String,String>> {
         
     }
             
-    
+    /**
+     * Tests if returns can not find a key
+     */
     @Test
     void test04_remove_returns_false_when_key_not_present() {
         try {
@@ -95,6 +137,9 @@ abstract class DataStructureADTTest<T extends DataStructureADT<String,String>> {
  
     // TODO: add tests 05 - 07 as described in assignment
     
+    /**
+     * Tests remove operation 
+     */
     @Test
     void test05_insert_remove_one() {
         try {
@@ -113,6 +158,9 @@ abstract class DataStructureADTTest<T extends DataStructureADT<String,String>> {
         }
     }
     
+    /**
+     * Tests insert for a few nodes
+     */
     @Test
     void test06_insert_many_size() {
         try {
@@ -130,6 +178,9 @@ abstract class DataStructureADTTest<T extends DataStructureADT<String,String>> {
         }
     }
     
+    /**
+     * Tests if duplicate value allowed
+     */
     @Test
     void test07_duplicate_values() {
       String key1  = "1",
@@ -150,12 +201,13 @@ abstract class DataStructureADTTest<T extends DataStructureADT<String,String>> {
     }
 
     // TODO: add more tests of your own design to ensure that you can detect implementation that fail
-    
+    /**
+     * Tests if null value allowed
+     */
     @Test
     void test08_insert_null_key_value() {
         String key   = null,
                value = "d";
-        
         try {
             ds.insert(key, value);
             fail("did not throw a null pointer exception");
@@ -165,6 +217,9 @@ abstract class DataStructureADTTest<T extends DataStructureADT<String,String>> {
         
     }
     
+    /**
+     * tests contains operation
+     */
     @Test
     void test09_contains_returns_true() {
         try {
@@ -183,6 +238,9 @@ abstract class DataStructureADTTest<T extends DataStructureADT<String,String>> {
         
     }
     
+    /**
+     * test contains operation
+     */
     @Test
     void test10_contains_returns_false() {
         try {

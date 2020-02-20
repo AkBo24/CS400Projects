@@ -1,5 +1,7 @@
 import java.util.List;
 
+import com.sun.org.apache.xml.internal.security.keys.content.KeyValue;
+
 // DO IMPLEMENT A BINARY SEARCH TREE IN THIS CLASS
 
 /**
@@ -45,7 +47,13 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      * @throws KeyNotFoundException if key is not found in this BST
      */
     public K getKeyOfLeftChildOf(K key) throws IllegalNullKeyException, KeyNotFoundException {
-         return null;
+        if(key == null) throw new IllegalNullKeyException();
+        if(!contains(key)) throw new KeyNotFoundException();
+        
+        KeyValuePair temp = lookup(key);
+        
+        if(temp.lChild == null) return null;        
+        return temp.lChild.key;
     }
     
     /**
@@ -59,10 +67,35 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      * @throws IllegalNullKeyException if key is null
      * @throws KeyNotFoundException if key is not found in this BST
      */
-    public K getKeyOfRightChildOf(K key) throws IllegalNullKeyException, KeyNotFoundException {
-         return null;
+    public K getKeyOfRightChildOf(K key) throws IllegalNullKeyException, KeyNotFoundException {        
+        if(key == null) throw new IllegalNullKeyException();
+        if(!contains(key)) throw new KeyNotFoundException();
+        
+        KeyValuePair temp = lookup(key);
+        
+        if(temp.rChild == null) return null;        
+        return temp.rChild.key;
     }
     
+    private KeyValuePair lookup(K key) {
+        
+        // start at root of tree and descend down into appropriate subtrees
+        KeyValuePair curr = root;
+        int compare = 0;
+        
+        while(curr.haveChildren()) { //while curr has at least 1 child to enter
+            compare = curr.compareTo(key);
+            if(curr.lChild != null && compare < 0)
+                curr = curr.lChild;
+            else if(curr.rChild != null && compare > 0)
+                curr = curr.rChild;
+            else if(compare == 0)
+                return curr;
+        }
+           
+        //if key is not found
+        return null;
+    }
 
     /**
      * Returns the height of this BST.
@@ -83,7 +116,10 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      * @return the number of levels that contain keys in this BINARY SEARCH TREE
      */
     public int getHeight() {
-         return 0;
+        if(root == null) return 0;
+        if(!root.haveChildren()) return 1;
+        
+        return 1+max(height(root.lChild, height(root.rChild)));
     }
     
     
@@ -158,6 +194,12 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
     }
     
     private void insert(KeyValuePair kvp, KeyValuePair n) {
+        if (n == null) n = kvp;
+        
+        if (kvp.compareTo(n.key) < 0)
+            insert(kvp, n.lChild);
+        else if (kvp.compareTo(n.key) > 0)
+            insert(kvp, n.rChild);
         
     }
     
@@ -184,7 +226,8 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      */
     public V get(K key) throws IllegalNullKeyException, KeyNotFoundException {
         if(key == null) throw new IllegalNullKeyException("Key is null");
-        if(contains(key)) throw new KeyNotFoundException();
+        if(!contains(key)) throw new KeyNotFoundException();
+        
         return null;
     }
 
@@ -272,11 +315,21 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
             rChild = null;
         }
 
-        public KeyValuePair(K key, V val) {
+        private KeyValuePair(K key, V val) {
             this.key = key;
             this.val = val;
             lChild  = null;
             rChild  = null;
+        }
+        
+        //compare this key to other key
+        private int compareTo(K other) {
+            int compare = key.compareTo(other);
+            return compare;
+        }
+        
+        private boolean haveChildren() {
+            return lChild != null || rChild != null;
         }
     }
     

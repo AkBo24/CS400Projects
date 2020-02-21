@@ -1,7 +1,5 @@
 import java.util.List;
 
-import com.sun.org.apache.xml.internal.security.keys.content.KeyValue;
-
 // DO IMPLEMENT A BINARY SEARCH TREE IN THIS CLASS
 
 /**
@@ -77,6 +75,12 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
         return temp.rChild.key;
     }
     
+    /**
+     * helper method written to find and return a specific KeyValuePair
+     * @author akshaybodla
+     * @param key
+     * @return
+     */
     private KeyValuePair lookup(K key) {
         
         // start at root of tree and descend down into appropriate subtrees
@@ -118,8 +122,9 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
     public int getHeight() {
         if(root == null) return 0;
         if(!root.haveChildren()) return 1;
+        return 0;
         
-        return 1+max(height(root.lChild, height(root.rChild)));
+//        return 1+max(height(root.lChild, height(root.rChild)));
     }
     
     
@@ -185,22 +190,28 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
         if(key == null) throw new IllegalNullKeyException("Key is null");
         if(contains(key)) throw new  DuplicateKeyException("Key exisits in tree");
         
-        //if key is not null or not in the tree insert!
+        //if key is not null or not in the tree, insert!
         KeyValuePair kvp = new KeyValuePair(key, value);
-        insert(kvp, root);
+        root = insert(kvp, root);
         
         size++;
         return;
     }
     
-    private void insert(KeyValuePair kvp, KeyValuePair n) {
-        if (n == null) n = kvp;
+    private KeyValuePair insert(KeyValuePair kvp, KeyValuePair n) {
+
+        if(n == null) {
+            n = kvp;
+            return n;
+        }
         
-        if (kvp.compareTo(n.key) < 0)
-            insert(kvp, n.lChild);
-        else if (kvp.compareTo(n.key) > 0)
-            insert(kvp, n.rChild);
-        
+        int compare = n.key.compareTo(kvp.key);
+        if(compare > 0)
+            n.lChild = insert(kvp, n.lChild);
+        else if(compare < 0)
+            n.rChild = insert(kvp, n.rChild);
+
+        return n;
     }
     
 
@@ -228,7 +239,7 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
         if(key == null) throw new IllegalNullKeyException("Key is null");
         if(!contains(key)) throw new KeyNotFoundException();
         
-        return null;
+        return lookup(key).val;
     }
 
     /** 
@@ -237,8 +248,21 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      * Returns false if key is not null and is not present 
      */
     public boolean contains(K key) throws IllegalNullKeyException {
-        if(key == null) throw new IllegalNullKeyException("Key is null");
-        return false;
+        if(key  == null) throw new IllegalNullKeyException("Key is null");
+        if(root == null) return false;
+        
+        KeyValuePair curr = root;
+        int compare = curr.key.compareTo(key);
+        
+        while(curr != null) {
+            compare = curr.key.compareTo(key);
+            if(compare == 0) return true;
+            else if(compare > 0)
+                curr = curr.lChild;
+            else if(compare < 0)
+                curr = curr.rChild;
+        }
+        return false; //only happens when curr == null
     }
 
     /**
@@ -324,7 +348,7 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
         
         //compare this key to other key
         private int compareTo(K other) {
-            int compare = key.compareTo(other);
+            int compare = this.key.compareTo(other);
             return compare;
         }
         

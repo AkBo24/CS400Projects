@@ -85,15 +85,17 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
         
         // start at root of tree and descend down into appropriate subtrees
         KeyValuePair curr = root;
-        int compare = 0;
+        int compare = 0;//arbitrary default value
         
         while(curr.haveChildren()) { //while curr has at least 1 child to enter
             compare = curr.compareTo(key);
-            if(curr.lChild != null && compare < 0)
+            if(curr.lChild != null && compare < 0) //if current.key is less than key
                 curr = curr.lChild;
-            else if(curr.rChild != null && compare > 0)
+            
+            else if(curr.rChild != null && compare > 0) //if current.key is greater than key
                 curr = curr.rChild;
-            else if(compare == 0)
+            
+            else if(compare == 0) // when current.key and key are the same
                 return curr;
         }
            
@@ -199,7 +201,6 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
     }
     
     private KeyValuePair insert(KeyValuePair kvp, KeyValuePair n) {
-
         if(n == null) {
             n = kvp;
             return n;
@@ -224,10 +225,53 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
     public boolean remove(K key) throws IllegalNullKeyException {
         if(key == null) throw new IllegalNullKeyException("Key is null");
         
+        if(lookup(key) == null) return true;
+        
+        root = remove(key, root);
+        
         size--;
-        return false;
+        return lookup(key) != null;
     }
 
+    private KeyValuePair remove(K key, KeyValuePair n) {
+
+        //Base case: if tree is empty, return node
+        if(n == null) return n;
+        
+        //if we are not at the right node traverse down the tree to find it
+        if(key.compareTo(n.key) < 0) //traverse left subtree
+            n.lChild = remove(key, n.lChild);
+        else if(key.compareTo(n.key) > 0) //traverse right subtree
+            n.rChild = remove(key, n.rChild);
+        
+        //if key.equals(n.key) is true
+        else {
+            //case 1: if n has 1 child or no child
+            if (n.lChild == null) 
+                return n.rChild; 
+            else if (root.rChild == null) 
+                return root.lChild; 
+            
+            //case 3: n has two children
+            KeyValuePair replace = inOrderSuccessor(n.rChild);
+            n.setKeyValue(replace.key, replace.val);
+            n.rChild = remove(n.key, n.rChild);          
+        }     	
+    	return n;
+    }
+    
+    /** 
+     * Helper function to find minimum value node in subtree rooted at curr
+     * @param curr
+     * @return BSTNode representing the inOrderSuccessor
+     */
+    private KeyValuePair inOrderSuccessor(KeyValuePair curr) {
+        while(curr.lChild != null) {
+            curr = curr.lChild;
+        }
+        return curr;
+    }
+    
     /**
      * Returns the value associated with the specified key.
      *
@@ -339,7 +383,12 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
             rChild = null;
         }
 
-        private KeyValuePair(K key, V val) {
+        public void setKeyValue(K key2, V val2) {
+			this.key = key2;
+		    this.val = val2;			
+		}
+
+		private KeyValuePair(K key, V val) {
             this.key = key;
             this.val = val;
             lChild  = null;
@@ -360,6 +409,30 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
 } // copyrighted material, students do not have permission to post on public sites
 
 
-
+/*
+ *     	KeyValuePair temp = lookup(key); //finds the node in this BST for removal
+    	
+    	//both are true if temp has that child
+    	boolean hasLeft = temp.lChild != null;
+    	boolean hasRight = temp.rChild != null;
+    	
+    	//Base case: if tree is empty, return node
+        if(n == null) return n;
+    	
+    	//Case 2: temp has 1 child
+    	if(!hasLeft) //has only right child, pass up right subtree (temp.rChild)
+    		return temp.rChild;
+    	if(!hasRight) //has only left child, pass up left subtree (temp.lChild)
+    		return temp.rChild;
+    	
+    	//Case 3: temp has 2 children
+    	//find in-order successor, replace this node with in-order node
+    	//recursively delete in-order node
+    	if(hasLeft && hasRight) {
+    		KeyValuePair inOrder = inOrderSuccessor(temp);
+    		n.setKeyValue(inOrder.key, inOrder.val);
+    		n.rChild = remove(n.rChild, n.key);
+    	}
+ */
 
 //  deppeler@cs.wisc.edu

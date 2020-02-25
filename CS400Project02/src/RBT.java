@@ -1,5 +1,6 @@
 import java.util.List;
 
+
 /**
  * Implements a generic Red-Black tree extension of BST<K,V>.
  *
@@ -17,6 +18,9 @@ import java.util.List;
  */
 public class RBT<K extends Comparable<K>, V> implements STADT<K,V>{
 
+	private KeyValuePair root;
+	private int size;
+	
     // USE AND DO NOT EDIT THESE CONSTANTS
     public static final int RED = 0;
     public static final int BLACK = 1;
@@ -24,6 +28,8 @@ public class RBT<K extends Comparable<K>, V> implements STADT<K,V>{
 
     // TODO: define a default no-arg constructor
     public RBT() {
+    	root.setBlack();
+    	size = 0;
     }
 
     /**
@@ -34,7 +40,7 @@ public class RBT<K extends Comparable<K>, V> implements STADT<K,V>{
      * @return
      */
     public int colorOf(K key) {
-        Node found = getNodeWith(root,key); // TODO Auto-generated method stub
+    	KeyValuePair found = lookup(key);
         return found==null ? -1 : found.color;
     }
 
@@ -45,7 +51,7 @@ public class RBT<K extends Comparable<K>, V> implements STADT<K,V>{
      */
     public boolean rootIsBlack() {
         // TODO implement this method for your RBT 
-        return false;
+        return root.color == BLACK;
     }
 
     /**
@@ -56,7 +62,7 @@ public class RBT<K extends Comparable<K>, V> implements STADT<K,V>{
      * else return false if key is found and the node's color is BLACK.
      */
     public boolean isRed(K key) {
-        return false;
+        return root.color == RED;
     }
 
     /**
@@ -65,27 +71,46 @@ public class RBT<K extends Comparable<K>, V> implements STADT<K,V>{
      * If key is not found, throws KeyNotFoundException.
      * @return true if the key is found and the node's color is BLACK,
      * else return false if key is found and the node's color is RED.
+     * @throws IllegalNullKeyException 
+     * @throws KeyNotFoundException 
      */
-    public boolean isBlack(K key) {
-        return false;
+    public boolean isBlack(K key) throws IllegalNullKeyException, KeyNotFoundException {
+    	if(key == null) throw new IllegalNullKeyException();	
+    	
+    	KeyValuePair temp = lookup(key);
+    	if(temp == null) throw new KeyNotFoundException();
+    	    	
+        return temp.color == BLACK;
     }
 
     @Override
     public K getKeyAtRoot() {
         // TODO Auto-generated method stub
-        return null;
+        return root.key;
     }
 
     @Override
     public K getKeyOfLeftChildOf(K key) throws IllegalNullKeyException, KeyNotFoundException {
         // TODO Auto-generated method stub
-        return null;
+    	if(key == null) throw new IllegalNullKeyException();	
+    	
+    	KeyValuePair temp = lookup(key);
+    	if(temp == null) throw new KeyNotFoundException();    	
+    	if(temp.lChild == null) return null;
+    	
+        return temp.lChild.key;
     }
 
     @Override
     public K getKeyOfRightChildOf(K key) throws IllegalNullKeyException, KeyNotFoundException {
         // TODO Auto-generated method stub
-        return null;
+    	if(key == null) throw new IllegalNullKeyException();	
+    	
+    	KeyValuePair temp = lookup(key);
+    	if(temp == null) throw new KeyNotFoundException();    	
+    	if(temp.lChild == null) return null;
+    	
+        return temp.lChild.key;
     }
 
     @Override
@@ -127,25 +152,42 @@ public class RBT<K extends Comparable<K>, V> implements STADT<K,V>{
     @Override
     public boolean remove(K key) throws IllegalNullKeyException {
         // TODO Auto-generated method stub
-        return false;
+    	throw new UnsupportedOperationException("Unsupported Exception");
     }
 
     @Override
     public V get(K key) throws IllegalNullKeyException, KeyNotFoundException {
         // TODO Auto-generated method stub
-        return null;
+        if(key == null) throw new IllegalNullKeyException("Key is null");
+        if(!contains(key)) throw new KeyNotFoundException();
+        
+        return lookup(key).val;
     }
 
     @Override
     public boolean contains(K key) throws IllegalNullKeyException {
         // TODO Auto-generated method stub
-        return false;
+        if(key  == null) throw new IllegalNullKeyException("Key is null");
+        if(root == null) return false;
+        
+        KeyValuePair curr = root;
+        int compare = curr.key.compareTo(key);
+        
+        while(curr != null) {
+            compare = curr.key.compareTo(key);
+            if(compare == 0) return true;
+            else if(compare > 0)
+                curr = curr.lChild;
+            else if(compare < 0)
+                curr = curr.rChild;
+        }
+        return false; //only happens when curr == null
     }
 
     @Override
     public int numKeys() {
         // TODO Auto-generated method stub
-        return 0;
+        return size;
     }
 
     @Override
@@ -162,4 +204,80 @@ public class RBT<K extends Comparable<K>, V> implements STADT<K,V>{
     // TODO [OPTIONAL] you may override print() to include
     //      color R-red or B-black.
     
+    
+    /**
+     * helper method written to find and return a specific KeyValuePair
+     * @author akshaybodla
+     * @param key
+     * @return
+     */
+    private KeyValuePair lookup(K key) {
+        
+        // start at root of tree and descend down into appropriate subtrees
+        KeyValuePair curr = root;
+        int compare = 0;//arbitrary default value
+        
+        while(curr.haveChildren()) { //while curr has at least 1 child to enter
+            compare = curr.compareTo(key);
+            if(curr.lChild != null && compare < 0) //if current.key is less than key
+                curr = curr.lChild;
+            
+            else if(curr.rChild != null && compare > 0) //if current.key is greater than key
+                curr = curr.rChild;
+            
+            else if(compare == 0) // when current.key and key are the same
+                return curr;
+        }
+           
+        //if key is not found
+        return null;
+    }
+    
+    @SuppressWarnings("unused")
+    private class KeyValuePair {
+        private K key; //Key
+        private V val; //Value
+        private int color;
+        
+        private KeyValuePair lChild; //Left Child
+        private KeyValuePair rChild; //Right Child
+        
+        private KeyValuePair() {
+            key    = null;
+            val    = null;
+            lChild = null;
+            rChild = null;
+            color  = 1;
+        }
+
+        public void setKeyValue(K key2, V val2) {
+			this.key = key2;
+		    this.val = val2;			
+		}
+
+		private KeyValuePair(K key, V val) {
+            this.key = key;
+            this.val = val;
+            lChild  = null;
+            rChild  = null;
+        }
+        
+        //compare this key to other key
+        private int compareTo(K other) {
+            int compare = this.key.compareTo(other);
+            return compare;
+        }
+        
+        private boolean haveChildren() {
+            return lChild != null || rChild != null;
+        }
+        
+        private void setBlack() {
+        	this.color = BLACK;
+        }
+        
+        private void setRed() {
+        	this.color = RED;
+        }
+    }
 }

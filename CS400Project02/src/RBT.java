@@ -291,102 +291,71 @@ public class RBT<K extends Comparable<K>, V> implements STADT<K,V>{
             
         }
         triNodeRestructure(n);
+        recolorFix(n);
         return n;
     }
 	
 
     
-    /**
-     * Fixes Tri Node Restructure if p's sibling is null
-     * @param kvp
-     */
-    public void childIsRedFix(KeyValuePair grandPar) {
-    	
-    	KeyValuePair parent, kid, temp;
-    	// check if left child is null, then fix if right child is red
-    	if(!grandPar.hasRight() && grandPar.hasRight()) {
-    		parent = grandPar.lChild;
-    		boolean hasRight = parent.hasRight();
-    		boolean hasLeft  = parent.hasLeft();
-    		
-    		//Case 1: if the Red Violation is in grand parent's left child
-    		if(!hasLeft && hasRight) {
-    			kid  = parent.rChild;
-    			temp = grandPar;
-    			
-    			if(kid.color == BLACK) return; //if kid's color is black there is no violation
-    			
-    			//Case 2 in RBT Notes
-    			//grandPar KeyValuePair is replaced with Kid
-    			//to fix problem, set grandPar (kid's) lChild to parent
-    			//and rchild to grandPar's KeyValuePair (temp)
-    			grandPar.setRed();
-    			grandPar.setKeyValue(kid.key, kid.val);
-    			grandPar.lChild = parent;
-    			grandPar.rChild = temp;
-    			grandPar.setBlack(); //new grandparent becomes black
-    		}
-    		
-    		//Case 2: if the Red Violation is in grand parent's right child
-    		else if(!hasRight && hasLeft) {
-    			kid = parent.lChild;
-    			temp = grandPar;    			
-    			
-    			if(kid.color == BLACK) return; //no red violation
-    			
-    			//Case 1 in RBT notes
-    			//grandPar KeyValuePair is replaced with parent
-    			//to fix problem, set grandPar (parent's) lChild to kid
-    			//and rChild to grandParent
-    			grandPar.setRed();
-    			grandPar.setKeyValue(parent.key, parent.val);
-    			grandPar.lChild = kid;
-    			grandPar.rChild = temp;
-    			grandPar.setBlack();
-    		}
-    	}
-    	
-    	//Check if right child is null of grandparent, fix based on two cases
-    	else if(!grandPar.hasLeft() && grandPar.hasLeft()) {
-    		parent = grandPar.rChild;
-    		boolean hasRight = parent.hasRight();
-    		boolean hasLeft  = parent.hasLeft();
-    		
-    		//Case 1: if the violation is parent's right child
-    		if(!hasRight && hasLeft) {
-    			kid  = parent.lChild;
-    			temp = grandPar;    			
-    			
-    			if(kid.color == BLACK) return; //no violation
-    			
-    			//Case 4 in RBT notes
-    			//grandParent is replaced with kid
-    			//to fix problem, set grandPar (parent's) lChild to kid
-    			//and rChild to grandParent
-    			grandPar.setRed();
-    			grandPar.setKeyValue(kid.key, kid.val);
-    			grandPar.lChild = temp;
-    			grandPar.rChild = parent;
-    			grandPar.setBlack();
-    		}
-    		
-    		//Case 2: if the violation is parent's left child
-    		else if(!hasLeft && hasRight) {
-    			kid  = parent.rChild;
-    			temp = grandPar;
-    			
-    			//Case 3 in RBT notes
-    			//grandParent is replaced with kid
-    			//to fix problem, set grandPar (parent's) lChild to kid
-    			//and rChild to grandParent
-    			grandPar.setRed();
-    			if(kid.color == BLACK) return;
-    			grandPar.setKeyValue(parent.key, parent.val);
-    			grandPar.lChild = parent;
-    			grandPar.rChild = kid;
-    			grandPar.setBlack();
-    		}
-    	}
+    private void recolorFix(KeyValuePair grandPar) {
+        KeyValuePair parent, sibling;
+        
+        boolean hasBoth = grandPar.hasLeft() && grandPar.hasRight();
+        
+        if(hasBoth) {
+            
+            boolean bothRed = grandPar.lChild.color == RED && grandPar.rChild.color == RED;
+            
+//            System.out.println("grandPar:" + grandPar.key);
+//            System.out.println(bothRed);
+            if(bothRed) {
+                
+                //Case 1: parent is left child of grandParent has a red left child
+                parent  = grandPar.lChild;
+                sibling = grandPar.rChild;
+                
+                //if condition true, re-color to create red, black, red sandwich
+                if(parent.hasLeft() && parent.lChild.color == RED) {
+                    
+                    grandPar.setRed();
+                    parent.setBlack();
+                    sibling.setBlack();
+                    parent.lChild.setRed();
+                }
+                
+                //Case 2: parent has a red right child
+                else if(parent.hasRight() && parent.rChild.color == RED) {
+                    
+                    grandPar.setRed();
+                    parent.setBlack();
+                    sibling.setBlack();
+                    parent.lChild.setRed();
+                    return;
+                }
+                
+                //Case 1: parent is right child of grandParent has a red left child
+                parent  = grandPar.rChild;
+                sibling = grandPar.lChild;
+                if(parent.hasLeft() && parent.lChild.color == RED) {
+                    grandPar.setRed();
+                    parent.setBlack();
+                    sibling.setBlack();
+                    parent.lChild.setRed();
+                    return;
+                }
+                
+                //Case 4: parent has a red right child
+                if(parent.hasRight() && parent.rChild.color == RED) {
+                    grandPar.setRed();
+                    parent.setBlack();
+                    sibling.setBlack();
+                    parent.rChild.setRed();
+                    return;
+                }
+            }
+            
+            if(!rootIsBlack()) root.setBlack();
+        }
     }
     
     @Override

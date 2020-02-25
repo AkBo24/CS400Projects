@@ -45,12 +45,13 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      * @throws KeyNotFoundException if key is not found in this BST
      */
     public K getKeyOfLeftChildOf(K key) throws IllegalNullKeyException, KeyNotFoundException {
-        if(key == null) throw new IllegalNullKeyException();
-        if(!contains(key)) throw new KeyNotFoundException();
-        
-        KeyValuePair temp = lookup(key);
-        
-        if(temp.lChild == null) return null;        
+        // TODO Auto-generated method stub
+    	if(key == null) throw new IllegalNullKeyException();	
+    	
+    	KeyValuePair temp = lookup(key);
+    	if(temp == null) throw new KeyNotFoundException();    	
+    	if(temp.lChild == null) return null;
+    	
         return temp.lChild.key;
     }
     
@@ -65,13 +66,15 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      * @throws IllegalNullKeyException if key is null
      * @throws KeyNotFoundException if key is not found in this BST
      */
-    public K getKeyOfRightChildOf(K key) throws IllegalNullKeyException, KeyNotFoundException {        
-        if(key == null) throw new IllegalNullKeyException();
-        if(!contains(key)) throw new KeyNotFoundException();
-        
-        KeyValuePair temp = lookup(key);
-        
-        if(temp.rChild == null) return null;        
+    public K getKeyOfRightChildOf(K key) throws IllegalNullKeyException, KeyNotFoundException {
+        // TODO Auto-generated method stub
+    	if(key == null) throw new IllegalNullKeyException();	
+    	
+    	KeyValuePair temp = lookup(key);
+    	
+    	if(temp == null) throw new KeyNotFoundException();    	
+    	if(temp.rChild == null) return null;
+    	
         return temp.rChild.key;
     }
     
@@ -139,7 +142,23 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      * @return List of Keys in-order
      */
     public List<K> getInOrderTraversal() {
+    	printInorder(root);
         return null;
+    }
+    
+    private void printInorder(KeyValuePair node) 
+    { 
+        if (node == null) 
+            return; 
+  
+        /* first recur on left child */
+        printInorder(node.lChild); 
+  
+        /* then print the data of node */
+        System.out.print(node.key + " "); 
+  
+        /* now recur on right child */
+        printInorder(node.rChild);
     }
     
     /**

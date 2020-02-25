@@ -1,17 +1,19 @@
 
 public class Test {
     
-    public static void main(String[] args) {
-        BST<String, String> bst = new BST();
+    public static void main(String[] args) throws KeyNotFoundException {
+        RBT<String, String> bst = new RBT<String, String>();
         try {
-            bst.insert("2", "2");
+            bst.insert("5", "5");
             bst.insert("3", "3");
-            bst.insert("1", "1");
-            bst.insert("4", "4");
-            System.out.println(bst.getKeyOfLeftChildOf("2"));
-            System.out.println(bst.contains("3"));
-            System.out.println(bst.numKeys());
-        } catch (IllegalNullKeyException | DuplicateKeyException | KeyNotFoundException e) {
+            bst.insert("4", "4");            
+            System.out.println(bst.getKeyAtRoot());
+            System.out.println(bst.rootIsBlack());         
+            System.out.println( bst.getKeyOfRightChildOf("4"));
+            
+
+//            bst.getInOrderTraversal();
+        } catch (IllegalNullKeyException | DuplicateKeyException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }

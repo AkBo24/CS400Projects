@@ -1,6 +1,5 @@
 import java.util.List;
 
-
 /**
  * Implements a generic Red-Black tree extension of BST<K,V>.
  *
@@ -28,7 +27,6 @@ public class RBT<K extends Comparable<K>, V> implements STADT<K,V>{
 
     // TODO: define a default no-arg constructor
     public RBT() {
-    	root.setBlack();
     	size = 0;
     }
 
@@ -40,7 +38,7 @@ public class RBT<K extends Comparable<K>, V> implements STADT<K,V>{
      * @return
      */
     public int colorOf(K key) {
-    	KeyValuePair found = lookup(key);
+    	KeyValuePair found = lookup(key);    	
         return found==null ? -1 : found.color;
     }
 
@@ -107,10 +105,11 @@ public class RBT<K extends Comparable<K>, V> implements STADT<K,V>{
     	if(key == null) throw new IllegalNullKeyException();	
     	
     	KeyValuePair temp = lookup(key);
-    	if(temp == null) throw new KeyNotFoundException();    	
-    	if(temp.lChild == null) return null;
     	
-        return temp.lChild.key;
+    	if(temp == null) throw new KeyNotFoundException();    	
+    	if(temp.rChild == null) return null;
+    	
+        return temp.rChild.key;
     }
 
     @Override
@@ -121,8 +120,23 @@ public class RBT<K extends Comparable<K>, V> implements STADT<K,V>{
 
     @Override
     public List<K> getInOrderTraversal() {
-        // TODO Auto-generated method stub
+    	printInorder(root);
         return null;
+    }
+    
+    private void printInorder(KeyValuePair node) 
+    { 
+        if (node == null) 
+            return; 
+  
+        /* first recur on left child */
+        printInorder(node.lChild); 
+  
+        /* then print the data of node */
+        System.out.print(node.key + " "); 
+  
+        /* now recur on right child */
+        printInorder(node.rChild);
     }
 
     @Override
@@ -146,9 +160,235 @@ public class RBT<K extends Comparable<K>, V> implements STADT<K,V>{
     @Override
     public void insert(K key, V value) throws IllegalNullKeyException, DuplicateKeyException {
         // TODO Auto-generated method stub
+        if(key == null) throw new IllegalNullKeyException("Key is null");
+        if(contains(key)) throw new  DuplicateKeyException("Key exisits in tree");
         
+        //if key is not null or not in the tree, insert!
+        KeyValuePair kvp = new KeyValuePair(key, value);
+        
+        root = insert(kvp, root);
+        
+        
+        
+        size++;
+        return;
     }
 
+    private void triNodeRestructure(KeyValuePair grandPar) {
+		// TODO Auto-generated method stub
+    	
+    	KeyValuePair parent, kid;
+    	KeyValuePair temp = new KeyValuePair();
+    	temp.setKeyValue(grandPar.key, grandPar.val);
+    	
+    	//Tri-Node Restructure if Parent's siblings is null
+    	if(!grandPar.hasRight() && grandPar.lChild.haveChildren()) {
+    		parent = grandPar.lChild;
+    		
+    		//Case 1 of Tri-node restructure
+    		if(!parent.hasRight() && parent.hasLeft()) {
+    			kid = parent.lChild;
+    			
+        		//make sure that there is no red violation before fixing
+        		if(kid.color == BLACK) return;
+        		
+        		//Replace grand parent with parent's Key Value pair
+        		grandPar.setKeyValue(parent.key, parent.val);
+        		grandPar.setBlack(); //make sure grandParent (now parent) is black
+        		
+        		//set grandParent (now parent)'s children to fix the Red Violation
+        		kid.setRed();
+        		temp.setRed();
+        		grandPar.lChild = kid;
+        		grandPar.rChild = temp;
+    			
+    		}
+    		//Case 2 of Tri-node restructure
+    		else if(!parent.hasLeft() && parent.hasRight()) {
+    			kid = parent.rChild;
+    			
+        		//make sure that there is no red violation before fixing
+        		if(kid.color == BLACK) return;
+        		
+        		//Replace grand parent with kid's Key Value pair
+        		grandPar.setKeyValue(kid.key, kid.val);
+        		grandPar.setBlack(); //make sure grandParent (now kid) is black
+        		
+        		
+        		//set grandParent (now kid)'s children to fix the Red Violation
+        		parent.setRed();
+        		temp.setRed();
+        		grandPar.lChild = parent;
+        		grandPar.rChild = temp;
+        		parent.rChild = null;
+        		
+    		}
+    	}
+    	// Parent's left sibling is null
+    	else if(!grandPar.hasLeft() && grandPar.rChild.haveChildren()) {
+    		parent = grandPar.rChild;
+    		
+    		//Case 3 of Tri-node Restructure:
+    		if(!parent.hasLeft() && parent.hasRight()) {
+    			kid = parent.rChild;
+        		
+        		//make sure that there is no red violation before fixing
+        		if(kid.color == BLACK) return;
+        		
+        		//Replace grandParent with parent's Key Value pair
+        		grandPar.setKeyValue(parent.key, parent.val);
+        		grandPar.setBlack(); //make sure grandParent (now parent) is black
+        		
+        		//set grandParent (now parent)'s children to fix the Red Violation
+        		temp.setRed();
+        		kid.setRed();
+        		grandPar.lChild = temp;
+        		grandPar.rChild = kid;
+    		}
+    		
+    		//Case 4 of Tri-Node Restructure
+    		else if(!parent.hasRight() && parent.hasLeft()) {
+    			kid = parent.lChild;
+    			
+        		//make sure that there is no red violation before fixing
+        		if(kid.color == BLACK) return;
+        		
+        		//Replace grandParent with kid Key Value pair
+        		grandPar.setKeyValue(kid.key, kid.val);
+        		grandPar.setBlack(); //make sure grandParent (now kid) is black
+        		
+        		//set grandParent (now Kid)'s children to fix teh Red Violation
+        		temp.setRed();
+        		parent.setRed();
+        		grandPar.lChild = temp;
+        		grandPar.rChild = parent;
+        		parent.lChild = null;
+        		
+    		} //end else if
+    	} // end outer else if
+	}
+    
+	private KeyValuePair insert(KeyValuePair kvp, KeyValuePair n) {	
+		
+		if(root == null) {
+			root = kvp;
+			root.setBlack();
+			return root;
+		}
+        if(n == null) {
+            n = kvp;            
+            return n;
+        }
+        
+        int compare = n.key.compareTo(kvp.key);
+        if(compare > 0)
+            n.lChild = insert(kvp, n.lChild);
+        else if(compare < 0) {
+            n.rChild = insert(kvp, n.rChild);
+            
+//            System.out.println("n: " + n.key);
+//            System.out.println("rChild key:" + n.rChild.key);
+            
+        }
+        triNodeRestructure(n);
+        return n;
+    }
+	
+
+    
+    /**
+     * Fixes Tri Node Restructure if p's sibling is null
+     * @param kvp
+     */
+    public void childIsRedFix(KeyValuePair grandPar) {
+    	
+    	KeyValuePair parent, kid, temp;
+    	// check if left child is null, then fix if right child is red
+    	if(!grandPar.hasRight() && grandPar.hasRight()) {
+    		parent = grandPar.lChild;
+    		boolean hasRight = parent.hasRight();
+    		boolean hasLeft  = parent.hasLeft();
+    		
+    		//Case 1: if the Red Violation is in grand parent's left child
+    		if(!hasLeft && hasRight) {
+    			kid  = parent.rChild;
+    			temp = grandPar;
+    			
+    			if(kid.color == BLACK) return; //if kid's color is black there is no violation
+    			
+    			//Case 2 in RBT Notes
+    			//grandPar KeyValuePair is replaced with Kid
+    			//to fix problem, set grandPar (kid's) lChild to parent
+    			//and rchild to grandPar's KeyValuePair (temp)
+    			grandPar.setRed();
+    			grandPar.setKeyValue(kid.key, kid.val);
+    			grandPar.lChild = parent;
+    			grandPar.rChild = temp;
+    			grandPar.setBlack(); //new grandparent becomes black
+    		}
+    		
+    		//Case 2: if the Red Violation is in grand parent's right child
+    		else if(!hasRight && hasLeft) {
+    			kid = parent.lChild;
+    			temp = grandPar;    			
+    			
+    			if(kid.color == BLACK) return; //no red violation
+    			
+    			//Case 1 in RBT notes
+    			//grandPar KeyValuePair is replaced with parent
+    			//to fix problem, set grandPar (parent's) lChild to kid
+    			//and rChild to grandParent
+    			grandPar.setRed();
+    			grandPar.setKeyValue(parent.key, parent.val);
+    			grandPar.lChild = kid;
+    			grandPar.rChild = temp;
+    			grandPar.setBlack();
+    		}
+    	}
+    	
+    	//Check if right child is null of grandparent, fix based on two cases
+    	else if(!grandPar.hasLeft() && grandPar.hasLeft()) {
+    		parent = grandPar.rChild;
+    		boolean hasRight = parent.hasRight();
+    		boolean hasLeft  = parent.hasLeft();
+    		
+    		//Case 1: if the violation is parent's right child
+    		if(!hasRight && hasLeft) {
+    			kid  = parent.lChild;
+    			temp = grandPar;    			
+    			
+    			if(kid.color == BLACK) return; //no violation
+    			
+    			//Case 4 in RBT notes
+    			//grandParent is replaced with kid
+    			//to fix problem, set grandPar (parent's) lChild to kid
+    			//and rChild to grandParent
+    			grandPar.setRed();
+    			grandPar.setKeyValue(kid.key, kid.val);
+    			grandPar.lChild = temp;
+    			grandPar.rChild = parent;
+    			grandPar.setBlack();
+    		}
+    		
+    		//Case 2: if the violation is parent's left child
+    		else if(!hasLeft && hasRight) {
+    			kid  = parent.rChild;
+    			temp = grandPar;
+    			
+    			//Case 3 in RBT notes
+    			//grandParent is replaced with kid
+    			//to fix problem, set grandPar (parent's) lChild to kid
+    			//and rChild to grandParent
+    			grandPar.setRed();
+    			if(kid.color == BLACK) return;
+    			grandPar.setKeyValue(parent.key, parent.val);
+    			grandPar.lChild = parent;
+    			grandPar.rChild = kid;
+    			grandPar.setBlack();
+    		}
+    	}
+    }
+    
     @Override
     public boolean remove(K key) throws IllegalNullKeyException {
         // TODO Auto-generated method stub
@@ -211,26 +451,22 @@ public class RBT<K extends Comparable<K>, V> implements STADT<K,V>{
      * @param key
      * @return
      */
-    private KeyValuePair lookup(K key) {
+    private KeyValuePair lookup(K key)  {
+        if(root == null) return null;
         
-        // start at root of tree and descend down into appropriate subtrees
         KeyValuePair curr = root;
-        int compare = 0;//arbitrary default value
+        int compare = curr.key.compareTo(key);
         
-        while(curr.haveChildren()) { //while curr has at least 1 child to enter
-            compare = curr.compareTo(key);
-            if(curr.lChild != null && compare < 0) //if current.key is less than key
+        while(curr != null) {
+            compare = curr.key.compareTo(key);
+            if(compare == 0) return curr;
+            else if(compare > 0)
                 curr = curr.lChild;
-            
-            else if(curr.rChild != null && compare > 0) //if current.key is greater than key
+            else if(compare < 0)
                 curr = curr.rChild;
-            
-            else if(compare == 0) // when current.key and key are the same
-                return curr;
         }
-           
-        //if key is not found
-        return null;
+        return null; //only happens when curr == null
+    	
     }
     
     @SuppressWarnings("unused")
@@ -247,7 +483,7 @@ public class RBT<K extends Comparable<K>, V> implements STADT<K,V>{
             val    = null;
             lChild = null;
             rChild = null;
-            color  = 1;
+            color  = RED;
         }
 
         public void setKeyValue(K key2, V val2) {
@@ -270,6 +506,14 @@ public class RBT<K extends Comparable<K>, V> implements STADT<K,V>{
         
         private boolean haveChildren() {
             return lChild != null || rChild != null;
+        }
+        
+        private boolean hasRight() {
+        	return rChild != null;
+        }
+        
+        private boolean hasLeft() {
+        	return lChild != null;
         }
         
         private void setBlack() {

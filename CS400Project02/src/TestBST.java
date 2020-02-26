@@ -1,7 +1,8 @@
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -53,7 +54,7 @@ public class TestBST {
             // and 10 as its left child and 30 as its right child
 
             Assert.assertEquals(bst.getKeyAtRoot(), Integer.valueOf(10));
-            Assert.assertEquals(bst.getKeyOfRightChildOf(10), Integer.valueOf(20));
+            Assertions.assertEquals(bst.getKeyOfRightChildOf(10), Integer.valueOf(20));
             Assert.assertEquals(bst.getKeyOfRightChildOf(20), Integer.valueOf(30));
 
             bst.print();

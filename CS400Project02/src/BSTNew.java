@@ -14,13 +14,12 @@ import java.util.List;
  * @param <K> A Comparable type to be used as a key to an associated value.  
  * @param <V> A value associated with the given key.
  */
-public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
+public class BSTNew<K extends Comparable<K>, V> implements STADT<K,V> {
     
-    private BSTNode root;
+    BSTNode root;
     int size;
-   
-    public BST() {
-        root  = null;
+    
+    public BSTNew() {
         size = 0;
     }
     
@@ -75,30 +74,6 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
         return target.rChild.key; 
     }
     
-    /**
-     * helper method written to find and return a specific KeyValuePair
-     * @author akshaybodla
-     * @param key
-     * @return
-     */
-    private BSTNode lookup(K key) {
-        BSTNode curr = root;
-        
-        int compare;
-        
-        while(curr != null) {
-            compare = curr.key.compareTo(key);
-
-            if(compare > 0)
-                curr = curr.lChild;
-            else if(compare < 0)
-                curr = curr.rChild;
-            else if(compare == 0)
-                return curr;
-        }
-        
-        return null; //current reached a null leaf child, key is not in tree
-    }
 
     /**
      * Returns the height of this BST.
@@ -119,11 +94,7 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      * @return the number of levels that contain keys in this BINARY SEARCH TREE
      */
     public int getHeight() {
-        if(root == null) return 0;
-        if(!root.haveChildren()) return 1;
-        return 0;
-        
-//        return 1+max(height(root.lChild, height(root.rChild)));
+         return 0;
     }
     
     
@@ -136,13 +107,7 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      * @return List of Keys in-order
      */
     public List<K> getInOrderTraversal() {
-    	printInorder(root);
         return null;
-    }
-    
-    private void printInorder(BSTNode node) 
-    { 
-        
     }
     
     /**
@@ -190,19 +155,16 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      * If key is already in data structure, throw DuplicateKeyException(); 
      * Do not increase the num of keys in the structure, if key,value pair is not added.
      */
-    public void insert(K key, V value) throws IllegalNullKeyException, DuplicateKeyException {  
-      
-        if(key == null) throw new IllegalNullKeyException("Key is null");
-        if(contains(key)) throw new  DuplicateKeyException("Key exisits in tree");
+    public void insert(K key, V value) throws IllegalNullKeyException, DuplicateKeyException {
+        if(key == null) throw new IllegalNullKeyException();
+        if(this.contains(key)) throw new DuplicateKeyException();
         
-        //if key is not null or not in the tree, insert!
         BSTNode kvp = new BSTNode(key, value);
         root = insert(root, kvp);
         
         size++;
         return;
     }
-    
     
     private BSTNode insert(BSTNode n, BSTNode kvp) {
         
@@ -213,6 +175,10 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
         }
         
         int compare = kvp.compareTo(n);
+        System.out.println("kvp: " + kvp.key);
+        System.out.println("n  : " + n.key);
+        System.out.println("compare: " + compare);
+        System.out.println();
         
         if(compare > 0)
             n.rChild = insert(n.rChild, kvp);
@@ -221,7 +187,6 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
         
         return n;
     }
-    
 
     /** 
      * If key is found, remove the key,value pair from the data structure 
@@ -230,55 +195,9 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      * If key is null, throw IllegalNullKeyException
      */
     public boolean remove(K key) throws IllegalNullKeyException {
-        if(key == null) throw new IllegalNullKeyException("Key is null");
-        
-        if(lookup(key) == null) return true;
-        
-        root = remove(key, root);
-        
-        size--;
-        return lookup(key) != null;
+        return false;
     }
 
-    private BSTNode remove(K key, BSTNode n) {
-
-        //Base case: if tree is empty, return node
-        if(n == null) return n;
-        
-        //if we are not at the right node traverse down the tree to find it
-        if(key.compareTo(n.key) < 0) //traverse left subtree
-            n.lChild = remove(key, n.lChild);
-        else if(key.compareTo(n.key) > 0) //traverse right subtree
-            n.rChild = remove(key, n.rChild);
-        
-        //if key.equals(n.key) is true
-        else {
-            //case 1: if n has 1 child or no child
-            if (n.lChild == null) 
-                return n.rChild; 
-            else if (root.rChild == null) 
-                return root.lChild; 
-            
-            //case 3: n has two children
-            BSTNode replace = inOrderSuccessor(n.rChild);
-            n.setKeyValuePair(replace.key, replace.val);
-            n.rChild = remove(n.key, n.rChild);          
-        }     	
-    	return n;
-    }
-    
-    /** 
-     * Helper function to find minimum value node in subtree rooted at curr
-     * @param curr
-     * @return BSTNode representing the inOrderSuccessor
-     */
-    private BSTNode inOrderSuccessor(BSTNode curr) {
-        while(curr.lChild != null) {
-            curr = curr.lChild;
-        }
-        return curr;
-    }
-    
     /**
      * Returns the value associated with the specified key.
      *
@@ -287,10 +206,7 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      * If key is not found, throw KeyNotFoundException().
      */
     public V get(K key) throws IllegalNullKeyException, KeyNotFoundException {
-        if(key == null) throw new IllegalNullKeyException("Key is null");
-        if(!contains(key)) throw new KeyNotFoundException();
-        
-        return lookup(key).val;
+        return null;
     }
 
     /** 
@@ -299,8 +215,6 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      * Returns false if key is not null and is not present 
      */
     public boolean contains(K key) throws IllegalNullKeyException {
-        if(key  == null) throw new IllegalNullKeyException("Key is null");
-        if(root == null) return false;
         
         BSTNode curr = root;
         int compare;
@@ -322,7 +236,7 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      *  Returns the number of key,value pairs in the data structure
      */
     public int numKeys() {
-        return size;
+        return 0;
     }
     
     
@@ -373,8 +287,28 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
        The connecting lines are not required if we can interpret your tree.
 
      */
+    
     public void print() {
         System.out.println("not yet implemented");
+    }
+    
+    private BSTNode lookup(K key) {
+        BSTNode curr = root;
+        
+        int compare;
+        
+        while(curr != null) {
+            compare = curr.key.compareTo(key);
+
+            if(compare > 0)
+                curr = curr.lChild;
+            else if(compare < 0)
+                curr = curr.rChild;
+            else if(compare == 0)
+                return curr;
+        }
+        
+        return null; //current reached a null leaf child, key is not in tree
     }
     
     private class BSTNode {
@@ -406,15 +340,21 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
         }
         
         private int compareTo(BSTNode other) {
+            
+            
+//            System.out.println("3333: " + this.key.compareTo(other.key));
+//            System.out.println(this.key);
+//            System.out.println(other.key);
+//            System.out.println("2".compareTo("12"));
+            
             return this.key.compareTo(other.key);
         }
         
-        private boolean haveChildren() {
-            return lChild != null || rChild != null;
-        }
-            
     }
     
 } // copyrighted material, students do not have permission to post on public sites
+
+
+
 
 //  deppeler@cs.wisc.edu

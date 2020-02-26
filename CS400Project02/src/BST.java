@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 // DO IMPLEMENT A BINARY SEARCH TREE IN THIS CLASS
@@ -76,31 +77,6 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
     }
     
     /**
-     * helper method written to find and return a specific KeyValuePair
-     * @author akshaybodla
-     * @param key
-     * @return
-     */
-    private BSTNode lookup(K key) {
-        BSTNode curr = root;
-        
-        int compare;
-        
-        while(curr != null) {
-            compare = curr.key.compareTo(key);
-
-            if(compare > 0)
-                curr = curr.lChild;
-            else if(compare < 0)
-                curr = curr.rChild;
-            else if(compare == 0)
-                return curr;
-        }
-        
-        return null; //current reached a null leaf child, key is not in tree
-    }
-
-    /**
      * Returns the height of this BST.
      * H is defined as the number of levels in the tree.
      * 
@@ -118,14 +94,27 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      * 
      * @return the number of levels that contain keys in this BINARY SEARCH TREE
      */
+    
     public int getHeight() {
         if(root == null) return 0;
         if(!root.haveChildren()) return 1;
-        return 0;
         
-//        return 1+max(height(root.lChild, height(root.rChild)));
+        return 1 + max( height(root.lChild), height(root.rChild) );
     }
     
+    private int height(BSTNode child) {
+        // TODO Auto-generated method stub
+        
+        //We have reached an end of a path
+        if(child == null )
+            return 0;
+        
+        return 1 + max(height(child.lChild), height(child.rChild));
+    }
+
+    private int max(int x, int y) {
+        return x>y ? x : y;
+    }
     
     /**
      * Returns the keys of the data structure in sorted order.
@@ -136,13 +125,20 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      * @return List of Keys in-order
      */
     public List<K> getInOrderTraversal() {
-    	printInorder(root);
-        return null;
+    	List<K> list = new ArrayList<K>();
+    	if(root == null || size == 0) return list;
+        
+        printInorder(root, list);
+        return list;
     }
     
-    private void printInorder(BSTNode node) 
-    { 
+    private void printInorder(BSTNode n, List<K> list) { 
+        if(n == null)
+            return;
         
+        printInorder(n.lChild, list);
+        list.add(n.key);
+        printInorder(n.rChild, list);
     }
     
     /**
@@ -154,7 +150,21 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      * @return List of Keys in pre-order
      */
     public List<K> getPreOrderTraversal() {
-        return null;
+        List<K> list = new ArrayList<K>();
+        if(root == null || size == 0) return list;
+        
+        printPreOrderTraversal(root, list);
+        return list;
+    }
+
+    private void printPreOrderTraversal(BSTNode n, List<K> list) {
+        // TODO Auto-generated method stub
+        if(n == null) return;
+        
+        list.add(n.key);
+        printPreOrderTraversal(n.lChild, list);
+        printPreOrderTraversal(n.rChild, list);
+        
     }
 
     /**
@@ -166,9 +176,22 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      * @return List of Keys in post-order
      */
     public List<K> getPostOrderTraversal() {
-        return null;
+        List<K> list = new ArrayList<K>();
+        if(root == null || size == 0) return list;
+        
+        printPostOrderTraversal(root, list);
+        return list;
     }
 
+    private void printPostOrderTraversal(BSTNode n, List<K> list) {
+        if(n == null) return;
+        
+        printPostOrderTraversal(n.lChild, list);
+        printPostOrderTraversal(n.rChild, list);
+        
+        list.add(n.key);
+    }
+    
     /**
      * Returns the keys of the data structure in level-order traversal order.
      * 
@@ -180,9 +203,28 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      * @return List of Keys in level-order
      */
     public List<K> getLevelOrderTraversal() {
-        return null;
+        List<K> list = new ArrayList<K>();
+        if(root == null || size == 0) return list;
+        
+        list.add(root.key);
+        
+        printLevelOrderTraversal(root, list);
+        return list;
     }
     
+    private void printLevelOrderTraversal(BSTNode n, List<K> list) {
+        if(n == null)
+            return;
+        
+        if(n.lChild != null)
+            list.add(n.lChild.key);
+        if(n.rChild != null)
+            list.add(n.rChild.key);
+        
+        printLevelOrderTraversal(n.lChild, list);
+        printLevelOrderTraversal(n.rChild, list);
+        
+    }
     
     /** 
      * Add the key,value pair to the data structure and increase the number of keys.
@@ -377,6 +419,31 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
         System.out.println("not yet implemented");
     }
     
+    /**
+     * helper method written to find and return a specific KeyValuePair
+     * @author akshaybodla
+     * @param key
+     * @return
+     */
+    private BSTNode lookup(K key) {
+        BSTNode curr = root;
+        
+        int compare;
+        
+        while(curr != null) {
+            compare = curr.key.compareTo(key);
+    
+            if(compare > 0)
+                curr = curr.lChild;
+            else if(compare < 0)
+                curr = curr.rChild;
+            else if(compare == 0)
+                return curr;
+        }
+        
+        return null; //current reached a null leaf child, key is not in tree
+    }
+
     private class BSTNode {
         
         K key;

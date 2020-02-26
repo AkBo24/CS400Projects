@@ -2,7 +2,8 @@
 public class Test {
     
     public static void main(String[] args) throws KeyNotFoundException {
-        RBT<Integer, Integer> bst = new RBT<Integer, Integer>();
+        BST<Integer, Integer> bst = new BST<Integer, Integer>();
+//        RBT<Integer, Integer> bst = new RBT<Integer, Integer>();
         try {
             
             // USE AND DO NOT EDIT THESE CONSTANTS
@@ -19,21 +20,27 @@ public class Test {
             bst.insert(three, three);
             bst.insert(four, four);
             
-            System.out.println(bst.getKeyAtRoot());
-            System.out.println("color: " + bst.colorOf(2));
-            System.out.println("left : " + bst.getKeyOfLeftChildOf(two));
-            System.out.println("right: " + bst.getKeyOfRightChildOf(two) + "\n");
-
-
+//            System.out.println(bst.getKeyAtRoot());
+//            System.out.println("color: " + bst.colorOf(2));
+//            System.out.println("left : " + bst.getKeyOfLeftChildOf(two));
+//            System.out.println("right: " + bst.getKeyOfRightChildOf(two) + "\n");
+//
+//
+//            
+//            System.out.println(one);
+//            System.out.println("color: " + bst.colorOf(one) + "\n");
+//            
+//            System.out.println(three);
+//            System.out.println("color: " + bst.colorOf(three) + "\n");
+//            
+//            System.out.println(four);
+//            System.out.println("right: " + bst.colorOf(four));
             
-            System.out.println(one);
-            System.out.println("color: " + bst.colorOf(one) + "\n");
-            
-            System.out.println(three);
-            System.out.println("color: " + bst.colorOf(three) + "\n");
-            
-            System.out.println(four);
-            System.out.println("right: " + bst.colorOf(four));
+            System.out.println(bst.getHeight());
+            System.out.println(bst.getInOrderTraversal().toString());
+            System.out.println(bst.getPreOrderTraversal().toString());
+            System.out.println(bst.getPostOrderTraversal());
+            System.out.println(bst.getLevelOrderTraversal());
 
             
 //            System.out.println("root: " + bst.getKeyAtRoot());

@@ -30,12 +30,12 @@
  *
  */
 //TODO: Add class header here
-public class DS_My implements DataStructureADT< String, String >{
+public class BST implements DataStructureADT< String, String >{
 
     private BSTNode root;
     private int size;
     
-    public DS_My() {
+    public BST() {
        root   = null;
        size   =    0;
     }

@@ -1,7 +1,7 @@
 
 public class Test {
     public static void main(String[] args) {
-        DS_My ds = new DS_My();
+        BST ds = new BST();
 
 //        String t = "";
 //        for(int i = 0; i < 25; i++) {

@@ -42,6 +42,7 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      */
     public K getKeyOfLeftChildOf(K key) throws IllegalNullKeyException, KeyNotFoundException {
         if(key == null) throw new IllegalNullKeyException();
+        
         if(!this.contains(key)) throw new KeyNotFoundException();
         
         BSTNode target = lookup(key);
@@ -244,9 +245,10 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
     private BSTNode insert(BSTNode n, BSTNode kvp) {
         
         if(n == null) {
-            n = new BSTNode();
-            n.setKeyValuePair(kvp.key, kvp.val);
-            return n;
+            return kvp;
+//            n = new BSTNode();
+//            n.setKeyValuePair(kvp.key, kvp.val);
+//            return n;
         }
         
         int compare = kvp.compareTo(n);
@@ -279,13 +281,18 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
 
     private BSTNode remove(K key, BSTNode n) {
         
+        
         //Base case: if tree is empty, return node
         if(n == null) return n;
+//        System.out.println(n.key);
         
-        if(n.key.compareTo(key) > 0)
-            return remove(key, n.rChild);
-        else if(n.key.compareTo(key) < 0)
-            return remove(key, n.rChild);
+        int compare = n.key.compareTo(key);
+//        System.out.println(compare);
+        
+        if(compare > 0)
+            n.lChild = remove(key, n.lChild);
+        else if(compare < 0)
+            n.rChild = remove(key, n.rChild);
         else { //found the node to remove
             
             //Case 1: node has no children

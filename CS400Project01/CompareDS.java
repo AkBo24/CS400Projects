@@ -33,12 +33,12 @@ public class CompareDS {
         System.out.println
             ("CompareDS.main Compares work time for: DS_My and DS_Brian\n");
         
-        DS_My    dsM = new DS_My();
+        BST    dsM = new BST();
         DS_Brian dsB = new DS_Brian();
         trial1(dsM, dsB); // //test insert for 100000 nodes
-        trial2(new DS_My(), new DS_Brian()); //test remove for 100 nodes
-        trial3(new DS_My(), new DS_Brian()); //test contains for 1000
-        trial4(new DS_My(), new DS_Brian()); //test insert for 100000
+        trial2(new BST(), new DS_Brian()); //test remove for 100 nodes
+        trial3(new BST(), new DS_Brian()); //test contains for 1000
+        trial4(new BST(), new DS_Brian()); //test insert for 100000
 
     }
     
@@ -47,7 +47,7 @@ public class CompareDS {
      * @param dsM
      * @param dsB
      */
-    private static void trial4(DS_My dsM, DS_Brian dsB) {
+    private static void trial4(BST dsM, DS_Brian dsB) {
         // TODO Auto-generated method stub
         System.out.println("Trial 1: Inserting a large amount of items\n");
         
@@ -77,7 +77,7 @@ public class CompareDS {
      * @param dsM
      * @param dsB
      */
-    private static void trial3(DS_My dsM, DS_Brian dsB) {
+    private static void trial3(BST dsM, DS_Brian dsB) {
         // TODO Auto-generated method stub
         System.out.println("\nTrial 3: Removing 1000 nodes\n");
         
@@ -111,7 +111,7 @@ public class CompareDS {
      * @param dsM
      * @param dsB
      */
-    private static void trial2(DS_My dsM, DS_Brian dsB) {
+    private static void trial2(BST dsM, DS_Brian dsB) {
         // TODO Auto-generated method stub
         System.out.println("\nTrial 2: Removing 10 nodes\n");
         
@@ -145,7 +145,7 @@ public class CompareDS {
      * @param dsM
      * @param dsB
      */
-    private static void trial1(DS_My dsM, DS_Brian dsB) {
+    private static void trial1(BST dsM, DS_Brian dsB) {
         // TODO Auto-generated method stub
         System.out.println("Trial 1: Inserting a large amount of items\n");
         

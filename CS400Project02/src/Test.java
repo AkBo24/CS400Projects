@@ -3,6 +3,39 @@ public class Test {
     
     public static void main(String[] args){
         BST<Integer, Integer> bst = new BST<Integer, Integer>();
+        
+        try {
+            bst.insert(20, 20);
+            bst.insert(30, 20);
+            bst.insert(25, 20);
+            bst.insert(67, 20);
+            bst.insert(45, 20);
+
+            bst.remove(30);
+            System.out.println(bst.getKeyAtRoot());
+            
+            System.out.println(bst.getInOrderTraversal().toString());
+            
+        } catch (IllegalNullKeyException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (DuplicateKeyException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } 
+
+
+
+
+        
+//        for(int i = 0; i < 100000; i++)
+//            try {
+//                bst.insert(i, i);
+//            } catch (IllegalNullKeyException | DuplicateKeyException e) {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+//            }
+        
 //        RBT<Integer, Integer> bst = new RBT<Integer, Integer>();
     }
 }

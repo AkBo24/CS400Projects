@@ -18,18 +18,12 @@ import java.util.List;
  */
 public class RBT<K extends Comparable<K>, V> implements STADT<K,V>{
     
-    RBTNode root;
-    int size = 0;
+    private RBTNode root = null;
+    private int size = 0;
 
     // USE AND DO NOT EDIT THESE CONSTANTS
     public static final int RED = 0;
     public static final int BLACK = 1;
-
-
-    // TODO: define a default no-arg constructor
-    public RBT() {
-        size = 0;
-    }
 
     /**
      * Returns the color of the node that contains the specified key.
@@ -239,10 +233,38 @@ public class RBT<K extends Comparable<K>, V> implements STADT<K,V>{
         list.add(n.key);
     }
 
-    @Override
+    /**
+     * Returns the keys of the data structure in level-order traversal order.
+     * 
+     * The root is first in the list, then the keys found in the next level down,
+     * and so on. 
+     * 
+     * If the SearchTree is empty, an empty list is returned.
+     * 
+     * @return List of Keys in level-order
+     */
     public List<K> getLevelOrderTraversal() {
-        // TODO Auto-generated method stub
-        return null;
+        List<K> list = new ArrayList<K>();
+        if(root == null || size == 0) return list;
+        
+        list.add(root.key);
+        
+        printLevelOrderTraversal(root, list);
+        return list;
+    }
+    
+    private void printLevelOrderTraversal(RBTNode n, List<K> list) {
+        if(n == null)
+            return;
+        
+        if(n.lChild != null)
+            list.add(n.lChild.key);
+        if(n.rChild != null)
+            list.add(n.rChild.key);
+        
+        printLevelOrderTraversal(n.lChild, list);
+        printLevelOrderTraversal(n.rChild, list);
+        
     }
 
     @Override
@@ -415,7 +437,7 @@ public class RBT<K extends Comparable<K>, V> implements STADT<K,V>{
                     grandPar.setRed();
                     parent.setBlack();
                     sibling.setBlack();
-                    parent.lChild.setRed();
+                    parent.rChild.setRed();
                     return;
                 }
                 
@@ -535,7 +557,7 @@ public class RBT<K extends Comparable<K>, V> implements STADT<K,V>{
         
         private RBTNode(K key, V val) {
             this.key = key;
-            this.val = null;
+            this.val = val;
             color = RED;
             
             lChild = null;

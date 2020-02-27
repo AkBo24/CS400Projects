@@ -17,13 +17,8 @@ import java.util.List;
  */
 public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
     
-    private BSTNode root;
-    int size;
-   
-    public BST() {
-        root  = null;
-        size = 0;
-    }
+    private BSTNode root = null;
+    private int size = 0; 
     
     /**
      * Returns the key that is in the root node of this ST.
@@ -283,30 +278,39 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
     }
 
     private BSTNode remove(K key, BSTNode n) {
-
+        
         //Base case: if tree is empty, return node
         if(n == null) return n;
         
-        //if we are not at the right node traverse down the tree to find it
-        if(key.compareTo(n.key) < 0) //traverse left subtree
-            n.lChild = remove(key, n.lChild);
-        else if(key.compareTo(n.key) > 0) //traverse right subtree
-            n.rChild = remove(key, n.rChild);
-        
-        //if key.equals(n.key) is true
-        else {
-            //case 1: if n has 1 child or no child
-            if (n.lChild == null) 
-                return n.rChild; 
-            else if (root.rChild == null) 
-                return root.lChild; 
+        if(n.key.compareTo(key) > 0)
+            return remove(key, n.rChild);
+        else if(n.key.compareTo(key) < 0)
+            return remove(key, n.rChild);
+        else { //found the node to remove
             
-            //case 3: n has two children
-            BSTNode replace = inOrderSuccessor(n.rChild);
-            n.setKeyValuePair(replace.key, replace.val);
-            n.rChild = remove(n.key, n.rChild);          
-        }     	
-    	return n;
+            //Case 1: node has no children
+            if(n.rChild == null && n.lChild == null)
+                return null;
+            
+            //Case 2: node has 1 child, first left then check right
+            //set this node's value to its child's then remove the pointer to child
+            if(n.rChild == null && n.lChild != null)
+                return n.lChild;
+                
+            else if(n.lChild == null && n.rChild != null)
+                return n.rChild;
+            
+            //Case 3: node has 2 children
+            //Find the in-order successor, replace this node with that key value pair
+            //recursively delete in-order successor
+            if(n.rChild != null && n.lChild != null) {
+                BSTNode inOrder = inOrderSuccessor(n.rChild);
+                n.setKeyValuePair(inOrder.key, inOrder.val);
+                n.rChild = remove(n.key, n.rChild);
+            }
+        }
+        
+        return n;
     }
     
     /** 
@@ -315,9 +319,13 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
      * @return BSTNode representing the inOrderSuccessor
      */
     private BSTNode inOrderSuccessor(BSTNode curr) {
+        
+        if(curr == null) return curr;
+        
         while(curr.lChild != null) {
             curr = curr.lChild;
         }
+     
         return curr;
     }
     
@@ -332,7 +340,26 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
         if(key == null) throw new IllegalNullKeyException("Key is null");
         if(!contains(key)) throw new KeyNotFoundException();
         
-        return lookup(key).val;
+        BSTNode found = lookup(key);
+        
+        return found.val;
+        
+//        BSTNode curr = root;
+//        int compare;
+//        
+//        while(curr != null) {            
+//            compare = curr.key.compareTo(key);
+//            System.out.println("curr: "+ curr.key);
+//            if(compare < 0)
+//                curr = curr.lChild;
+//            else if(compare > 0)
+//                curr = curr.rChild;
+//            else {
+//                
+//                return curr.val;
+//            }
+//        }    
+//        return null;
     }
 
     /** 
@@ -416,7 +443,19 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
 
      */
     public void print() {
-        System.out.println("not yet implemented");
+        
+        List<K> list = getLevelOrderTraversal();
+//        System.out.println("|\n|\n"+this.root.key+"\n|\n|");
+        
+        System.out.println(list.toString());
+        
+        
+        
+//        int height = getHeight();
+//        for(int i = 0; i < height; i++) {
+//            System.out.println("|");
+//        }
+        
     }
     
     /**
@@ -461,7 +500,7 @@ public class BST<K extends Comparable<K>, V> implements STADT<K,V> {
         
         private BSTNode(K key, V val) {
             this.key = key;
-            this.val = null;
+            this.val = val;
             
             lChild = null;
             rChild = null;

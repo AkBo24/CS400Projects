@@ -13,17 +13,18 @@ import org.junit.Test;
 public class HashTableTest{
 
     // TODO: add other fields that will be used by multiple tests
+    HashTableADT<Integer, String> htIntegerKey;
     
     // TODO: add code that runs before each test method
     @Before
     public void setUp() throws Exception {
-
+        htIntegerKey = new HashTable<Integer,String>();
     }
 
     // TODO: add code that runs after each test method
     @After
     public void tearDown() throws Exception {
-
+        
     }
     
     /** 
@@ -34,7 +35,6 @@ public class HashTableTest{
      */
     @Test
     public void test000_collision_scheme() {
-        HashTableADT htIntegerKey = new HashTable<Integer,String>();
         int scheme = htIntegerKey.getCollisionResolution();
         if (scheme < 1 || scheme > 9) 
             fail("collision resolution must be indicated with 1-9");
@@ -46,16 +46,45 @@ public class HashTableTest{
     @Test
     public void test001_IllegalNullKey() {
         try {
-            HashTableADT htIntegerKey = new HashTable<Integer,String>();
             htIntegerKey.insert(null, null);
             fail("should not be able to insert null key");
         } 
-        catch (IllegalNullKeyException e) { /* expected */ } 
+        catch (IllegalNullKeyException e) { assert(true); } 
         catch (Exception e) {
             fail("insert null key should not throw exception "+e.getClass().getName());
         }
     }
     
     // TODO add your own tests of your implementation
+    /**
+     * 
+     */
+    @Test
+    public void test002_Insert_Values() {
+        try {
+            htIntegerKey.insert(1, "1");
+            htIntegerKey.insert(2, "2");
+            htIntegerKey.insert(3, "3");
+        }
+        catch(Exception e) {
+            fail("insert null key should not throw exception "+e.getClass().getName());
+        }
+    }
     
+    /**
+     * 
+     */
+    @Test
+    public void test002_Insert_replaces_same_key() {
+        try {
+            htIntegerKey.insert(1, "1");
+            htIntegerKey.insert(1, "2");
+            assert(htIntegerKey.get(1).equals("2"));
+            if(!htIntegerKey.get(1).equals("2")) 
+                fail("Inserting duplicate key did not update the value");
+        }
+        catch(Exception e) {
+            fail("insert null key should not throw exception "+e.getClass().getName());
+        }
+    }
 }

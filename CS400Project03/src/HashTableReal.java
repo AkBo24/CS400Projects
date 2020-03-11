@@ -17,38 +17,30 @@ import java.util.List;
 //       you must use the hashCode provided by the <K key> object
 //       and one of the techniques presented in lecture
 //
-public class HashTable<K extends Comparable<K>, V> implements HashTableADT<K, V> {
-	
-	// TODO: ADD and comment DATA FIELD MEMBERS needed for your implementation
-    private LinkedList<hashNode> hash;
-	private double lFThreshold;
-	private double loadFactor;
-	private int size;
+public class HashTableReal<K extends Comparable<K>, V> implements HashTableADT<K, V> {
     
-	// TODO: comment and complete a default no-arg constructor
-	public HashTable() {
-	    hash = new LinkedList<hashNode>();
-	    lFThreshold = 75;
-	    loadFactor  = 0;
-	    size = 0;
-	}
-	
-	
-	// TODO: comment and complete a constructor that accepts 
-	// initial capacity and load factor threshold
+    // TODO: ADD and comment DATA FIELD MEMBERS needed for your implementation
+    private V[] hash;
+    private double lFThreshold;
+    private double loadFactor;
+    private int size;
+    
+    
+    // TODO: comment and complete a default no-arg constructor
+    public HashTableReal() {
+
+    }
+    
+    // TODO: comment and complete a constructor that accepts 
+    // initial capacity and load factor threshold
         // threshold is the load factor that causes a resize and rehash
-	public HashTable(int initialCapacity, double loadFactorThreshold) {
-        hash = new LinkedList<hashNode>();	    
-	    this.lFThreshold = loadFactorThreshold;
-	    loadFactor = 0;
-	    size = 0;
-	}
+    public HashTableReal(int initialCapacity, double loadFactorThreshold) {
+
+    }
 
     @Override
     public void insert(K key, V value) throws IllegalNullKeyException {
         // TODO Auto-generated method stub
-        if(key == null) throw new IllegalNullKeyException("Key is null!");
-        
         
     }
 
@@ -67,19 +59,19 @@ public class HashTable<K extends Comparable<K>, V> implements HashTableADT<K, V>
     @Override
     public int numKeys() {
         // TODO Auto-generated method stub
-        return size;
+        return 0;
     }
 
     @Override
     public double getLoadFactorThreshold() {
         // TODO Auto-generated method stub
-        return lFThreshold;
+        return 0;
     }
 
     @Override
     public double getLoadFactor() {
         // TODO Auto-generated method stub
-        return loadFactor;
+        return 0;
     }
 
     @Override
@@ -91,31 +83,24 @@ public class HashTable<K extends Comparable<K>, V> implements HashTableADT<K, V>
     @Override
     public int getCollisionResolution() {
         // TODO Auto-generated method stub
-        return 8;
+        return 0;
     }
 
-    
-    private int getHash(K key) {
-        // TODO Auto-generated method stub
-        return key.hashCode();
-    }
-	
     public class hashNode {
-        private LinkedList<V> nodeHash;
+        private V[] nodeHash;
         private double lFThreshold;
         private double loadFactor;
         private int size;
         
         private hashNode() {
-            nodeHash = new LinkedList<V>();
+            nodeHash = new V[];
         }
         
-        private double getThreshold() {
-            return lFThreshold;
-        }
-        
-        private void add(V val) {
-            nodeHash.add(val);
-        }
+        private double getThreshold
     }
+    
+    
+    // TODO: implement all unimplemented methods so that the class can compile
+
+        
 }

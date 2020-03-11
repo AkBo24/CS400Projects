@@ -1,3 +1,5 @@
+import java.util.LinkedList;
+import java.util.List;
 
 // TODO: comment and complete your HashTableADT implementation
 // DO ADD UNIMPLEMENTED PUBLIC METHODS FROM HashTableADT and DataStructureADT TO YOUR CLASS
@@ -18,53 +20,85 @@
 public class HashTable<K extends Comparable<K>, V> implements HashTableADT<K, V> {
 	
 	// TODO: ADD and comment DATA FIELD MEMBERS needed for your implementation
-		
+    private LinkedList<List<V>> hash;
+	private double lFThreshold;
+	private double loadFactor;
+	private int size;
+    
 	// TODO: comment and complete a default no-arg constructor
 	public HashTable() {
-
+	    hash = new LinkedList<List<V>>();
+	    lFThreshold = 75;
+	    loadFactor  = 0;
+	    size = 0;
 	}
+	
 	
 	// TODO: comment and complete a constructor that accepts 
 	// initial capacity and load factor threshold
         // threshold is the load factor that causes a resize and rehash
 	public HashTable(int initialCapacity, double loadFactorThreshold) {
-
+        hash = new LinkedList<List<V>>();	    
+	    this.lFThreshold = loadFactorThreshold;
+	    loadFactor = 0;
+	    size = 0;
 	}
 
     @Override
     public void insert(K key, V value) throws IllegalNullKeyException {
         // TODO Auto-generated method stub
+        if(key == null) throw new IllegalNullKeyException("key is null");
         
+        hash.get(getHash(key)).add(0, value);
+        size++;
+        loadFactor = size / hash.size();
     }
 
     @Override
     public boolean remove(K key) throws IllegalNullKeyException {
         // TODO Auto-generated method stub
-        return false;
+        if(key == null) throw new IllegalNullKeyException("key is null");
+        
+        List<V> temp = hash.get(getHash(key));
+        
+        if(temp == null || temp.size() == 0) return false;
+        
+        temp.remove(0);
+        size--;
+        loadFactor = size / hash.size();
+        return true;
     }
 
     @Override
     public V get(K key) throws IllegalNullKeyException, KeyNotFoundException {
         // TODO Auto-generated method stub
-        return null;
+        if(key == null) 
+            throw new IllegalNullKeyException("key is null");
+        
+        List<V> temp = hash.get(getHash(key));
+        
+        if(temp == null || temp.size() == 0) 
+            throw new KeyNotFoundException("Key not found");
+        
+        return temp.get(0);
     }
 
     @Override
     public int numKeys() {
         // TODO Auto-generated method stub
-        return 0;
+        return size;
     }
 
     @Override
     public double getLoadFactorThreshold() {
         // TODO Auto-generated method stub
-        return 0;
+        return lFThreshold;
     }
 
     @Override
     public double getLoadFactor() {
         // TODO Auto-generated method stub
-        return 0;
+        return loadFactor;
     }
 
     @Override
@@ -76,10 +110,13 @@ public class HashTable<K extends Comparable<K>, V> implements HashTableADT<K, V>
     @Override
     public int getCollisionResolution() {
         // TODO Auto-generated method stub
-        return 0;
+        return 8;
     }
 
-	// TODO: implement all unimplemented methods so that the class can compile
-
+    
+    private int getHash(K key) {
+        // TODO Auto-generated method stub
+        return key.hashCode();
+    }
 		
 }

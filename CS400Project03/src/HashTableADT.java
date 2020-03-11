@@ -11,7 +11,7 @@
  * DO NOT EDIT THIS INTERFACE
  */
 public interface HashTableADT<K extends Comparable<K>, V> extends DataStructureADT<K, V> {
-
+    
 	// Returns the load factor threshold that was
 	// passed into the constructor when creating
 	// the instance of the HashTable.

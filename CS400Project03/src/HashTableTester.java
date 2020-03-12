@@ -1,3 +1,5 @@
+import java.util.LinkedList;
+
 // TODO: comment and complete your HashTableADT implementation
 // DO ADD UNIMPLEMENTED PUBLIC METHODS FROM HashTableADT and DataStructureADT TO YOUR CLASS
 // DO IMPLEMENT THE PUBLIC CONSTRUCTORS STARTED
@@ -14,7 +16,7 @@
 //       you must use the hashCode provided by the <K key> object
 //       and one of the techniques presented in lecture
 //
-public class HashTable<K extends Comparable<K>, V> implements HashTableADT<K, V> {
+public class HashTableTester<K extends Comparable<K>, V> implements HashTableADT<K, V> {
 
     // TODO: ADD and comment DATA FIELD MEMBERS needed for your implementation
     DataItem<K,V>[] hash;
@@ -24,7 +26,7 @@ public class HashTable<K extends Comparable<K>, V> implements HashTableADT<K, V>
     
     
     // TODO: comment and complete a default no-arg constructor
-    public HashTable() {
+    public HashTableTester() {
         hash  = new DataItem[100];
         lFThreshold = 0.75;
         loadFactor = 0;
@@ -34,7 +36,7 @@ public class HashTable<K extends Comparable<K>, V> implements HashTableADT<K, V>
     // TODO: comment and complete a constructor that accepts
     // initial capacity and load factor threshold
     // threshold is the load factor that causes a resize and rehash
-    public HashTable(int initialCapacity, double loadFactorThreshold) {
+    public HashTableTester(int initialCapacity, double loadFactorThreshold) {
         hash = new DataItem[initialCapacity];
         lFThreshold = loadFactorThreshold;
         loadFactor  = 0;

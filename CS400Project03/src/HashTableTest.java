@@ -65,7 +65,11 @@ public class HashTableTest{
             htIntegerKey.insert(2, "2");
             htIntegerKey.insert(3, "3");
             
-//            assertEquals()
+            assertEquals(htIntegerKey.get(1),"1");
+            assertEquals(htIntegerKey.get(2),"2");
+            assertEquals(htIntegerKey.get(3),"3");
+
+
         }
         catch(Exception e) {
             e.printStackTrace();

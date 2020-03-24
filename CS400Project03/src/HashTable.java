@@ -1,3 +1,29 @@
+/**
+ * HashTable.java created by akshaybodla on MacBook Pro in CS400Project0
+ * 
+ * Author: Akshay Bodla (bodla@wisc.edu)
+ * Date: March 12, 2020
+ * 
+ * Course: CS400
+ * Semester: Spring 2020
+ * Lecture: 001
+ * 
+ * IDE: Eclipse IDE for Java Developers
+ * 
+ * Version: 2019-06 (4.12.0)
+ * Build id: 20190614-1200
+ * 
+ * Device:  Akshay's Macbook Pro
+ * OS    :  macOS High Sierra
+ * Version: Version 10.13.6
+ * 
+ * List Collaborators: N/A
+ * 
+ * Other Credits: N/A
+ * 
+ * Known Bugs: n/a
+ */
+
 // TODO: comment and complete your HashTableADT implementation
 // DO ADD UNIMPLEMENTED PUBLIC METHODS FROM HashTableADT and DataStructureADT TO YOUR CLASS
 // DO IMPLEMENT THE PUBLIC CONSTRUCTORS STARTED
@@ -14,123 +40,184 @@
 //       you must use the hashCode provided by the <K key> object
 //       and one of the techniques presented in lecture
 //
-public class HashTable<K extends Comparable<K>, V> implements HashTableADT<K, V> {
 
-    // TODO: ADD and comment DATA FIELD MEMBERS needed for your implementation
-    DataItem<K,V>[] hash;
-    private double lFThreshold;
-    private double loadFactor;
-    private double size;
+/**
+ * My implementation of a hash table using an array of linked nodes
+ * (chaining)
+ * @author Askhay Bodla
+ */
+@SuppressWarnings({ "unchecked", "rawtypes", "unused" })
+public class HashTable<K extends Comparable<K>, V> implements HashTableADT<K, V> {
     
+    // TODO: ADD and comment DATA FIELD MEMBERS needed for your implementation
+    private DataItem[] hash;   //Hash Table
+    private double threshold;  //the max value before rehashing is required
+    private double loadFactor; //value representing "how full" the table is
+    private double size;       //# of elements in this table
+    
+    
+    public static void main(String[] args) {
+        HashTable<Integer, Integer> test = new HashTable<Integer,Integer>();
+        
+        try {
+//            test.insert(10, 10);
+//            test.insert(20, 20);
+//            
+//            System.out.println(test.get(10));
+//            System.out.println(test.get(20));
+            int num = 1000000;
+
+            for(int i = 0; i < num; i++)
+                test.insert(i, i);
+            
+            for(int i = 0; i < num; i++)
+                System.out.println(test.get(i));
+            
+        } catch (IllegalNullKeyException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (KeyNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
     
     // TODO: comment and complete a default no-arg constructor
+    /**
+     * @param no parameter constructor
+     * Hash Table is set to size 100, and rehashes when
+     * 75 elements are inserted (75% full)
+     */
     public HashTable() {
-        hash  = new DataItem[100];
-        lFThreshold = 0.75;
+        hash       = new DataItem[10];
+        threshold  = 0.75;
         loadFactor = 0;
-        size = 0;
+        size       = 0;
     }
-
-    // TODO: comment and complete a constructor that accepts
-    // initial capacity and load factor threshold
-    // threshold is the load factor that causes a resize and rehash
+    
+    /**
+     * Hash Table constructor
+     * @param initialCapacity
+     * @param loadFactorThreshold 
+     * threshold is the load factor that causes a resize and rehash
+     */
     public HashTable(int initialCapacity, double loadFactorThreshold) {
-        hash = new DataItem[initialCapacity];
-        lFThreshold = loadFactorThreshold;
-        loadFactor  = 0;
-        size = 0;
+        hash       = new DataItem[initialCapacity];
+        threshold  = loadFactorThreshold;
+        loadFactor = 0;
+        size       = 0;     
     }
 
+    /**
+     * Insert a key value pair into this hash table
+     * @param K key to insert
+     * @param V val to insert
+     */
     @Override
     public void insert(K key, V value) throws IllegalNullKeyException {
         // TODO Auto-generated method stub
-        if(key == null) throw new IllegalNullKeyException("Key is null!");
-
-        int hashIndex = getHash(key);
-        DataItem<K,V> element = new DataItem<K,V>(key,value);
         
+        if(key == null) throw new IllegalNullKeyException("Key is null!");
+        
+        int hashIndex   = getHash(key, hash); //where this key is to be inserted
+        
+        //if that index in hash is empty enter in there
+        //otherwise traverse to the end of the list and insert this key value pair there
         if(hash[hashIndex] == null) {
-            hash[hashIndex] = element;
-            size++;
-            loadFactor = size/hash.length;
+            hash[hashIndex] = new DataItem(key, value);
         }
-        else {
-            DataItem<K,V> temp = hash[hashIndex];
+        else { 
+            DataItem curr = hash[hashIndex];
             
-            while(temp!=null) {
-                if(temp.key.compareTo(key) == 0) {
-                    temp.setValue(value);
-                }
-                temp = temp.next;
+            //iterate throught the linked nodes
+            while(curr.next != null) {
+                curr = curr.next;
             }
-            hash[hashIndex] = hash[hashIndex].add(element);
-            size++;
-            loadFactor = size/hash.length;
+            
+            curr.setNext(new DataItem<K,V>(key, value));
         }
-        hashRestructure();
+        
+        size++;
+        loadFactor = size/hash.length;
+        
+        //rehash only when the load factor equals the threshold of this table
+        if(loadFactor == threshold)
+            rehash();
     }
-   
+
+    /**
+     * Remove a data item from this hash table
+     * @param K key to be removed from this hash table
+     * @throws IllegalNullKeyException if key is null
+     */
     @Override
     public boolean remove(K key) throws IllegalNullKeyException {
         // TODO Auto-generated method stub
-        if(key == null) throw new IllegalNullKeyException("Key is null!");
-
-        int hashIndex = getHash(key);
-        if(hash[hashIndex] == null)
-            return false;
+        if(key == null) throw new  IllegalNullKeyException("Key is null!");
+        if(size == 0) return false;
         
-        else {
-            DataItem<K,V> temp = hash[hashIndex];
+        //The supposed index in this hash table
+        int hashIndex = getHash(key, hash);
+        
+        //Curr represents the linked node where this key is supposed to be
+        DataItem curr = hash[hashIndex];
+        
+        //if curr is null then this key is not found
+        //as there is no data item @ key's index
+        if(curr == null) 
+            throw new  IllegalNullKeyException("Key not found");      
+        int compare = curr.compareTo(key);
+        
+        //There is at least one node at this index
+        while(curr != null) {
             
-            while(temp != null) {
-                if(temp.key.compareTo(key) == 0) {
-                    temp = null;
-                    size--;
-                    loadFactor = size/hash.length;
-                    return true;
-                }
-                temp = temp.next;
+            //If curr's key is the same as the one inserted
+            if(curr.next.key.compareTo(key) == 0) {
+                curr.next = curr.next.next; //get the next node
+                size--;
+                loadFactor = size/hash.length;
+                return true;
             }
+            
+            curr = curr.next;
+            compare = curr.compareTo(key);
         }
         
         return false;
     }
 
+    /**
+     * Get a value from this hash table
+     * @param K key to get its valued pair
+     * @throws IllegalNullKeyException if key is null
+     * @throws KeyNotFoundException if this key is not present in the hash table
+     */
     @Override
     public V get(K key) throws IllegalNullKeyException, KeyNotFoundException {
         // TODO Auto-generated method stub
         if(key == null) throw new IllegalNullKeyException("Key is null!");
+        int hashIndex = getHash(key, hash);
+             
+        DataItem curr = hash[hashIndex];
         
-        int hashIndex = getHash(key);
+        if(curr == null) 
+            throw new KeyNotFoundException("Key not found!");        
+        int compare = curr.compareTo(key);
         
-        if(hash[hashIndex] == null) 
-            throw new KeyNotFoundException("Key not found");
-        else {
-            DataItem<K,V> temp = hash[hashIndex];
+        while(curr != null && compare != 0) {
+            curr = curr.next;
             
-            while(temp != null) {
-                if(temp.key.compareTo(key) == 0)
-                    return temp.val;
-                temp = temp.next;
-            }
+            if(curr == null) throw new KeyNotFoundException("Key is null!");
+           
+            compare = curr.compareTo(key);
         }
         
-        throw new KeyNotFoundException("Key not found");
+        if(curr == null) 
+            throw new KeyNotFoundException("Key not found!");
+        else
+            return (V) curr.val;
+        
     }
-    
-//    public static void main(String[] args) {
-//        HashTableTester<Integer,Integer> test = new HashTableTester<Integer,Integer>();
-//        try {
-//            test.insert(1, 1);
-//            test.insert(101, 2);
-//            test.insert(201, 3);
-//            
-//
-//        } catch (IllegalNullKeyException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//    }
 
     @Override
     public int numKeys() {
@@ -141,7 +228,7 @@ public class HashTable<K extends Comparable<K>, V> implements HashTableADT<K, V>
     @Override
     public double getLoadFactorThreshold() {
         // TODO Auto-generated method stub
-        return lFThreshold;
+        return threshold;
     }
 
     @Override
@@ -161,65 +248,68 @@ public class HashTable<K extends Comparable<K>, V> implements HashTableADT<K, V>
         // TODO Auto-generated method stub
         return 5;
     }
-    
-    private int getHash(K key) {
-        return key.hashCode() % hash.length;
+
+    // TODO: implement all unimplemented methods so that the class can compile
+    private int getHash(K key, DataItem[] table) {
+        return key.hashCode()%table.length;
     }
     
-    private void hashRestructure() {
-        if(loadFactor == lFThreshold) {
-            DataItem<K,V>[] temp = new DataItem[hash.length*2+1];
+    private void rehash() {
+        // TODO Auto-generated method stub
+        DataItem<K,V>[] newTable = new DataItem[hash.length*2+1];
+        
+        for(int i = 0; i < newTable.length; i++) {
+            DataItem<K,V> temp = this.hash[i];
             
-            //re-insert every element in hash into temp since get hash is different
-            for(int i = 0; i < hash.length; i++) {
-                if(hash[i] != null)
-                    temp[i] = hash[i];
+            while(temp != null) {
+                int hashIndex = getHash(temp.key, newTable);
+                if(newTable[hashIndex] == null)
+                    newTable[hashIndex] = new DataItem(temp.key, temp.val);
+                else {
+                    newTable[hashIndex] = newTable[hashIndex].add(
+                            new DataItem(temp.key, temp.val));
+                }
+                temp = temp.next;
             }
-            hash = temp;
         }
-        
+        this.hash = newTable;
     }
     
-    @SuppressWarnings("unused")
-    private class DataItem<K,V> {
+    @SuppressWarnings("hiding")
+    private class DataItem <K extends Comparable<K>, V> {
         private K key;
-        private V val; 
-        private DataItem<K,V> next;
+        private V val;
+        private DataItem next;
         
-        private DataItem() {
-            setKey(null);
+        public DataItem() {
+            key  = null;
             val  = null;
-            setNext(null);
+            next = null;
         }
         
-        private void setValue(V val) {
-            // TODO Auto-generated method stub
-            this.val = val;
+        public DataItem(K key, V val) {
+            this.key =  key;
+            this.val =  val;
+            next     = null;
         }
-
-        private DataItem(K key, V val) {
-            this.key = key;
-            this.val = val;
+        
+        public int compareTo(K other) {
+            return this.key.compareTo(other);
         }
-
-        private void setKey(K key) {
-            this.key = key;
+        
+        public void setNext(DataItem next) {
+            this.next = next;
         }
-
+        
+        public void deleteThis() {
+            
+        }
+        
         private DataItem<K,V> add(DataItem<K,V> element) {
             element.setNext(this);
             return element;
         }
-        
-        private void setNext(DataItem<K,V> next) {
-            this.next = next;
-        }
-        
-        private void setKeyValuePair(K key, V val) {
-            this.key = key;
-            this.val = val;
-        }
-    
     }
+    
 
 }

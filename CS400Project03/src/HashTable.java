@@ -55,33 +55,6 @@ public class HashTable<K extends Comparable<K>, V> implements HashTableADT<K, V>
     private double loadFactor; //value representing "how full" the table is
     private double size;       //# of elements in this table
     
-    
-    public static void main(String[] args) {
-        HashTable<Integer, Integer> test = new HashTable<Integer,Integer>();
-        
-        try {
-//            test.insert(10, 10);
-//            test.insert(20, 20);
-//            
-//            System.out.println(test.get(10));
-//            System.out.println(test.get(20));
-            int num = 1000000;
-
-            for(int i = 0; i < num; i++)
-                test.insert(i, i);
-            
-            for(int i = 0; i < num; i++)
-                System.out.println(test.get(i));
-            
-        } catch (IllegalNullKeyException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (KeyNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-    
     // TODO: comment and complete a default no-arg constructor
     /**
      * @param no parameter constructor

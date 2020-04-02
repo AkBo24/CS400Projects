@@ -64,7 +64,7 @@ public class Graph implements GraphADT {
     public void removeVertex(String vertex) {
         // TODO Auto-generated method stub
         if(vertex == null || !verticies.contains(vertex)) return;
-        verticies.remove(vertex);
+        verticies.remove(vertex); 
     }
 
     /**

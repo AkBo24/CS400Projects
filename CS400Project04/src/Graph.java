@@ -14,8 +14,8 @@ import java.util.Set;
 
 public class Graph implements GraphADT {
 	
-    Set<String>  verticies; //sets represent the edges between verticies in this graph
-    List<String> edges;     //list representing the verticies in this graph
+    private Set<String>  verticies; //sets represent the edges between verticies in this graph
+    private List<String> edges;     //list representing the verticies in this graph
     
 	/*
 	 * Default no-argument constructor
@@ -41,7 +41,8 @@ public class Graph implements GraphADT {
     @Override
     public void addVertex(String vertex) {
         // TODO Auto-generated method stub
-        if(vertex == null || vertex.contains(vertex)) return;
+//        System.out.println(vertex == null || verticies.contains(vertex));
+        if(vertex == null || verticies.contains(vertex)) return;
         verticies.add(vertex);
     }
 
@@ -62,7 +63,7 @@ public class Graph implements GraphADT {
     @Override
     public void removeVertex(String vertex) {
         // TODO Auto-generated method stub
-        if(vertex == null || !vertex.contains(vertex)) return;
+        if(vertex == null || !verticies.contains(vertex)) return;
         verticies.remove(vertex);
     }
 
@@ -154,7 +155,16 @@ public class Graph implements GraphADT {
     @Override
     public List<String> getAdjacentVerticesOf(String vertex) {
         // TODO Auto-generated method stub
-        return edges;
+        
+        List<String> vEdges = new ArrayList<>();
+        
+        for(String i : edges) {
+            if(i.substring(0, 1).equals(vertex))
+                vEdges.add(i.substring(1));
+                
+        }
+        
+        return vEdges;
     }
 
     /**

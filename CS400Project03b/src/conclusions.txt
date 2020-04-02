@@ -5,10 +5,30 @@ Complete p3b and answer the following questions using results of running JDK Mis
 1) What can you tell about the performance of your hash table implementation compared to Java's tree map? 
 Explain why (or when) your hash table is better or worse than Java's Tree Map.
 
+Better: My hash table's insert, remove, and get operations performed better than the tree map's
+operations for a very large data set (n = 10000000).  
+
+Worse/Equal: However, for a smaller data set (n ~= 10000) the hash table performed slightly better or
+slightly worse than the tree map (after several runs it seems to perform slightly better).  The rehash
+operation on a smaller group did take more resources than tree map.
+
 2) What did you observe in jdk mission control to come to the conclusion above?
+
+For the larger size, one of the screen shots show that the tree map takes on average 500 more cycles
+than the hash map (1528 cycles versus 1050 cycles).  The delete operation and get operation had a similar 
+difference between the two data structures.
+
+The second screenshot shows that the insert operations took the same number of cycles (specifically 13 for
+that particular run).  We also see that the rehash took considerably more cycles than the other stacks.
 
 3) SCREENSHOT_001.PNG NOTES: Briefly describe what this image 001 shows
 
+This image shows,for a large n, that the hash map performs much better than the tree map.  This is true
+for all operations.
+
 4) SCREENSHOT_002.PNG NOTES: Briefly describe what this image 002 shows
+
+This image shows, for a small n, that the two data structures roughly perform the same for the insert 
+operation. 
 
 5) Describe other screenshots if you include them in your submission.

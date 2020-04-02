@@ -40,11 +40,24 @@ public class MyProfiler<K extends Comparable<K>, V> {
 
     }
 
+    public void remove(K key) {
+        try {
+            hashtable.remove(key);
+            treemap.remove(key);
+        } catch (IllegalNullKeyException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+    }
+    
     public static void main(String[] args) {
         try {
             Scanner in = new Scanner(System.in);
             args = new String[1];
-            args[0] = in.nextInt()+"";
+            args[0] = in.next();
+            in.close();
+
             int numElements = Integer.parseInt(args[0]);
 
             // TODO: complete the main method.
@@ -56,24 +69,20 @@ public class MyProfiler<K extends Comparable<K>, V> {
             // See, ProfileSample.java for example.
 
             MyProfiler<Integer, Integer> profile = new MyProfiler<Integer, Integer>();
-
+            
+            //Insert numElements into profile
             for (int i = 0; i < numElements; i++) {
-                profile.insert(numElements, numElements);
+                profile.insert(i, i);
             }
 
+            //Retrieve numElements from profile
             for (int i = 0; i < numElements; i++) {
-                profile.retrieve(numElements);
+                profile.retrieve(i);
             }
-
-            // creating new object to test a different range
-            profile = new MyProfiler<Integer, Integer>();
-
-            for (int i = numElements / 2; i < numElements; i++) {
-                profile.insert(numElements, numElements);
-            }
-
-            for (int i = numElements; i < numElements; i++) {
-                profile.retrieve(numElements);
+            
+            //Remove numElements from profile
+            for (int i = 0; i < numElements; i++) {
+                profile.remove(i);
             }
 
             String msg = String.format("Inserted and retreived %d (key,value) pairs", numElements);

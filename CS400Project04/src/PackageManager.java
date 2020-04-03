@@ -140,47 +140,47 @@ public class PackageManager {
      */
     public List<String> getInstallationOrder(String pkg) 
             throws CycleException, PackageNotFoundException {
+        
+        
+        List<String> instOrder   = new ArrayList<String>();
+        List<String> allVert     = new ArrayList<String>();
+        Stack<String> stack      = new Stack<String>();
+        
+        for(String i : graph.getAllVertices())
+            allVert.add(i);
+        
+        int size = allVert.size();
+        boolean[] visited = new boolean[size];
+        
+        
+        //Using a modified DFS to build the dependency list
+        //Mark pkg as visited and enter its dependencies (edges)
+        visited[allVert.indexOf(pkg)] = true;
+        instOrder.add(pkg);
+        instOrder = dFS(pkg, visited, allVert, instOrder);
        
-        int size = graph.getAllVertices().size();
-        int pkgIndx; //used to find the index of the current pkg        
-        List<String> dependencies = new ArrayList<String>(); //keep track of installation order
-        List<String> pkgVert      = new ArrayList<String>(); //list representation of verticies
-        List<String> pkgEdg       = graph.getAdjacentVerticesOf(pkg);
-        boolean[] visited = new boolean[size]; //false: node is not visited; true: node is visited        
-        Stack<String> stack = new Stack<String>(); //used to keep track the order of visited nodes
-        
-        for(String i: graph.getAllVertices())
-            pkgVert.add(i);
-        
-        pkgIndx = pkgVert.indexOf(pkg);
-        visited[pkgIndx] = true;
-        stack.add(pkg);
-        dependencies.add(pkg);
-        
-        while(!stack.empty()) {
-            String curr = stack.peek();
-            pkgEdg = graph.getAdjacentVerticesOf(curr);
-            
-            if(pkgEdg.size() == 0) stack.pop();
-            
-              //for each immediate dependency of pkg, add it to the dependency list
-              for(String i : pkgEdg) {
-                  pkgIndx = pkgVert.indexOf(i);
-
-                  //if this dependency has not yet been visited mark it as visited
-                  //add to stack to later check if it has dependencies
-                  if(!visited[pkgIndx]) {
-                      visited[pkgIndx] = true;
-                      stack.add(i);
-                      dependencies.add(0, i);
-                  }
-              }
-              stack.remove(curr);
-        }
-        System.out.println(dependencies);
-        return dependencies;
+        System.out.println(instOrder);
+        return instOrder;        
     }
     
+    private List<String> dFS(String pkg, boolean[] visited, List<String> allVert,
+            List<String> instOrder) {
+        
+        List<String> dependencies = graph.getAdjacentVerticesOf(pkg);
+        int pkgIndx;
+        
+        for(String i : dependencies) {
+            pkgIndx = allVert.indexOf(i);
+            if(!visited[pkgIndx]) {
+                visited[pkgIndx] = true;
+                instOrder.add(0, i);
+                dFS(i, visited, allVert, instOrder);
+            }
+        }
+        
+        return instOrder;
+    }
+
     /**
      * Given two packages - one to be installed and the other installed, 
      * return a List of the packages that need to be newly installed. 

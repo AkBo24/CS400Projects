@@ -1,9 +1,14 @@
 import java.io.FileNotFoundException;
-
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 /**
@@ -38,12 +43,20 @@ import org.json.simple.parser.ParseException;
 public class PackageManager {
     
     private Graph graph;
+    private JSONArray getPacks;
+    private Set<String> verticies;
+    private List<String> edges;
+    private JSONObject jo;
     
     /*
      * Package Manager default no-argument constructor.
      */
     public PackageManager() {
-        
+        graph     = new Graph();
+        getPacks  = new JSONArray();
+        verticies = new HashSet<String>();
+        edges     = new ArrayList<String>();
+        jo = null;
     }
     
     /**
@@ -55,17 +68,62 @@ public class PackageManager {
      * @throws IOException if the give file cannot be read
      * @throws ParseException if the given json cannot be parsed 
      */
-    public void constructGraph(String jsonFilepath) throws FileNotFoundException, IOException, ParseException {
+    public void constructGraph(String jsonFilepath) 
+            throws FileNotFoundException, IOException, ParseException {
         
+        Object obj = new JSONParser().parse(new FileReader(jsonFilepath));
+       
+        jo = (JSONObject) obj;
+        getPacks = (JSONArray) jo.get("packages");
+        
+        getAllPackages();
+        
+        for(String i : verticies)
+            graph.addVertex(i);
+        
+        for(String i : edges)
+            graph.addEdge(i.substring(0,1), i.substring(1));
+
+        System.out.println(graph.getAllVertices());
+        System.out.println(graph.getAdjacentVerticesOf("A"));
+        System.out.println(graph.getAdjacentVerticesOf("B"));
+        System.out.println(graph.getAdjacentVerticesOf("C"));
+        System.out.println(graph.getAdjacentVerticesOf("D"));
     }
     
     /**
      * Helper method to get all packages in the graph.
+     * @param packages 
      * 
      * @return Set<String> of all the packages
      */
     public Set<String> getAllPackages() {
-        return null;
+        int size  = getPacks.size();
+        
+        for(int i = 0; i < size; i++) {
+            
+            JSONObject temp = (JSONObject) getPacks.get(i);
+            String packName = (String) temp.get("name");
+            JSONArray packDepe = (JSONArray) temp.get("dependencies");
+            
+            if(!verticies.contains(packName))
+                verticies.add(packName);
+            
+            for(int j = 0; j < packDepe.size(); j++) {
+                String inTemp     = (String) packDepe.get(j);
+                String dependency = packName+inTemp;
+                
+                if(!verticies.contains(inTemp))
+                    verticies.add(inTemp);
+                
+                if(!edges.contains(dependency))
+                    edges.add(dependency);
+                
+            }
+            
+        }
+        
+        return verticies;
     }
     
     /**
@@ -85,7 +143,8 @@ public class PackageManager {
      * @throws PackageNotFoundException if the package passed does not exist in the 
      * dependency graph.
      */
-    public List<String> getInstallationOrder(String pkg) throws CycleException, PackageNotFoundException {
+    public List<String> getInstallationOrder(String pkg) 
+            throws CycleException, PackageNotFoundException {
         return null;
     }
     
@@ -108,7 +167,8 @@ public class PackageManager {
      * @throws PackageNotFoundException if any of the packages passed 
      * do not exist in the dependency graph.
      */
-    public List<String> toInstall(String newPkg, String installedPkg) throws CycleException, PackageNotFoundException {
+    public List<String> toInstall(String newPkg, String installedPkg) 
+            throws CycleException, PackageNotFoundException {
         return null;
     }
     
@@ -147,6 +207,17 @@ public class PackageManager {
 
     public static void main (String [] args) {
         System.out.println("PackageManager.main()");
+        PackageManager manager = new PackageManager();
+        
+        try {
+            String filepath = "/Users/akshaybodla/Documents/GitHub/CS400Projects/CS400Project04/src/shared_dependencies.json";
+            manager.constructGraph(filepath);
+            
+            
+        } catch (IOException | ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
     
 }

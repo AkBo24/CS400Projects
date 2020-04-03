@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -83,12 +84,6 @@ public class PackageManager {
         
         for(String i : edges)
             graph.addEdge(i.substring(0,1), i.substring(1));
-
-        System.out.println(graph.getAllVertices());
-        System.out.println(graph.getAdjacentVerticesOf("A"));
-        System.out.println(graph.getAdjacentVerticesOf("B"));
-        System.out.println(graph.getAdjacentVerticesOf("C"));
-        System.out.println(graph.getAdjacentVerticesOf("D"));
     }
     
     /**
@@ -145,7 +140,45 @@ public class PackageManager {
      */
     public List<String> getInstallationOrder(String pkg) 
             throws CycleException, PackageNotFoundException {
-        return null;
+       
+        int size = graph.getAllVertices().size();
+        int pkgIndx; //used to find the index of the current pkg        
+        List<String> dependencies = new ArrayList<String>(); //keep track of installation order
+        List<String> pkgVert      = new ArrayList<String>(); //list representation of verticies
+        List<String> pkgEdg       = graph.getAdjacentVerticesOf(pkg);
+        boolean[] visited = new boolean[size]; //false: node is not visited; true: node is visited        
+        Stack<String> stack = new Stack<String>(); //used to keep track the order of visited nodes
+        
+        for(String i: graph.getAllVertices())
+            pkgVert.add(i);
+        
+        pkgIndx = pkgVert.indexOf(pkg);
+        visited[pkgIndx] = true;
+        stack.add(pkg);
+        dependencies.add(pkg);
+        
+        while(!stack.empty()) {
+            String curr = stack.peek();
+            pkgEdg = graph.getAdjacentVerticesOf(curr);
+            
+            if(pkgEdg.size() == 0) stack.pop();
+            
+              //for each immediate dependency of pkg, add it to the dependency list
+              for(String i : pkgEdg) {
+                  pkgIndx = pkgVert.indexOf(i);
+
+                  //if this dependency has not yet been visited mark it as visited
+                  //add to stack to later check if it has dependencies
+                  if(!visited[pkgIndx]) {
+                      visited[pkgIndx] = true;
+                      stack.add(i);
+                      dependencies.add(0, i);
+                  }
+              }
+              stack.remove(curr);
+        }
+        System.out.println(dependencies);
+        return dependencies;
     }
     
     /**
@@ -213,8 +246,15 @@ public class PackageManager {
             String filepath = "/Users/akshaybodla/Documents/GitHub/CS400Projects/CS400Project04/src/shared_dependencies.json";
             manager.constructGraph(filepath);
             
+            manager.getInstallationOrder("A");
             
         } catch (IOException | ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (CycleException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (PackageNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }

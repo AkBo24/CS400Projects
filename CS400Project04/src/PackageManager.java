@@ -126,7 +126,7 @@ public class PackageManager {
         
         //Add to a set since they, by default, do not allow duplicate values
         List<String> installation = new ArrayList<String>();
-        List<String> currDpn     = graph.getAdjacentVerticesOf(pkg);
+        List<String> currDpn      = graph.getAdjacentVerticesOf(pkg);
         
         //Get dependencies finds the dependencies of this pkg and creates the installation list
         //recursively
@@ -136,14 +136,21 @@ public class PackageManager {
         return installation;
     }
 
-    private void getDependencies(String pkg, List<String> installation) {
+    private void getDependencies(String pkg, List<String> installation) throws CycleException {
         //Get all the dependencies of the curr packages
         List<String> currDep = graph.getAdjacentVerticesOf(pkg);
         
+        graph.setMark(pkg, "IN PROGRESS");
+        
         //For each dependency find if it has any others
         for(String i : currDep) {
+            
+            if(graph.getMark(i).equals("IN PROGRESS")) throw new CycleException();
+            
             getDependencies(i, installation);
         }
+        
+        graph.setMark(pkg, "VISITED");
         
         //Only add this package if it is not in the installation order
         if(!installation.contains(pkg))
@@ -172,8 +179,22 @@ public class PackageManager {
      */
     public List<String> toInstall(String newPkg, String installedPkg)
             throws CycleException, PackageNotFoundException {
-
-        return null;
+        //Get two sets for each installation then do a symmetric difference to 
+        //eliminate the common packages (since they are already installed)
+        //the packages left over are the unique dependencies of newPkg
+        Set<String> alreadyInst = new HashSet<String>(getInstallationOrder(installedPkg));
+        Set<String> toInstall   = new HashSet<String>(getInstallationOrder(newPkg));
+        
+        //Get the symmetric difference of alreadyInst and toInstall
+        Set<String> symmetricDiff = new HashSet<String>(alreadyInst);
+        symmetricDiff.addAll(toInstall);
+        Set<String> temp = new HashSet<String>(alreadyInst);
+        symmetricDiff.retainAll(toInstall);
+        symmetricDiff.removeAll(temp);
+        
+        System.out.println(symmetricDiff);
+        
+        return new ArrayList<String>(symmetricDiff);
     }
 
     /**
@@ -190,10 +211,6 @@ public class PackageManager {
      */
     public List<String> getInstallationOrderForAllPackages() throws CycleException {
         // Choose arbitrary starting vertex & do a topological ordering algorithm
-        return null;
-    }
-
-    private String getNextSucc(String curr, boolean[] visited, List<String> allVert) {
         return null;
     }
 

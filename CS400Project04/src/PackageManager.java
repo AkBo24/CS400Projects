@@ -41,8 +41,6 @@ public class PackageManager {
 
     private Graph graph;
     private JSONArray getPacks;
-    private Set<String> verticies;
-    private List<String> edges;
     private JSONObject jo;
 
     /*
@@ -51,8 +49,6 @@ public class PackageManager {
     public PackageManager() {
         graph = new Graph();
         getPacks = new JSONArray();
-        verticies = new HashSet<String>();
-        edges = new ArrayList<String>();
         jo = null;
     }
 
@@ -74,13 +70,11 @@ public class PackageManager {
         jo = (JSONObject) obj;
         getPacks = (JSONArray) jo.get("packages");
 
-        getAllPackages();
-
-        for (String i : verticies)
+        Set<String> verticies = getAllPackages();
+        for(String i : verticies) {
             graph.addVertex(i);
-
-        for (String i : edges)
-            graph.addEdge(i.substring(0, 1), i.substring(1));
+        }
+        
     }
 
     /**
@@ -91,32 +85,21 @@ public class PackageManager {
      * @return Set<String> of all the packages
      */
     public Set<String> getAllPackages() {
-        int size = getPacks.size();
-
-        for (int i = 0; i < size; i++) {
-
-            JSONObject temp = (JSONObject) getPacks.get(i);
-            String packName = (String) temp.get("name");
-            JSONArray packDepe = (JSONArray) temp.get("dependencies");
-
-            if (!verticies.contains(packName))
-                verticies.add(packName);
-
-            for (int j = 0; j < packDepe.size(); j++) {
-                String inTemp = (String) packDepe.get(j);
-                String dependency = packName + inTemp;
-
-                if (!verticies.contains(inTemp))
-                    verticies.add(inTemp);
-
-                if (!edges.contains(dependency))
-                    edges.add(dependency);
-
+        Set<String> packages = new HashSet<String>();
+        
+        for(int i = 0; i < getPacks.size(); i++) {
+            JSONObject currPkg = (JSONObject) getPacks.get(i);
+            String pkgName = (String) currPkg.get("name");
+            packages.add(pkgName);
+            JSONArray dependencies = (JSONArray) currPkg.get("dependencies");
+            
+            for(int j = 0; j < dependencies.size(); j++) {
+                String currDpncy = (String) dependencies.get(j);
+                packages.add(currDpncy);
+                graph.addEdge(pkgName, currDpncy);
             }
-
         }
-
-        return verticies;
+        return packages;
     }
 
     /**
@@ -140,41 +123,12 @@ public class PackageManager {
      */
     public List<String> getInstallationOrder(String pkg)
             throws CycleException, PackageNotFoundException {
-
-        List<String> instOrder = new ArrayList<String>();
-        List<String> allVert = new ArrayList<String>();
-
-        for (String i : graph.getAllVertices())
-            allVert.add(i);
-
-        int size = allVert.size();
-        boolean[] visited = new boolean[size];
-
-        // Using a modified DFS to build the dependency list
-        // Mark pkg as visited and enter its dependencies (edges)
-        visited[allVert.indexOf(pkg)] = true;
-        instOrder.add(pkg);
-        instOrder = dFS(pkg, visited, allVert, instOrder);
-
-        return instOrder;
+        return null;
     }
 
     private List<String> dFS(String pkg, boolean[] visited, List<String> allVert,
             List<String> instOrder) {
-
-        List<String> dependencies = graph.getAdjacentVerticesOf(pkg);
-        int pkgIndx;
-
-        for (String i : dependencies) {
-            pkgIndx = allVert.indexOf(i);
-            if (!visited[pkgIndx]) {
-                visited[pkgIndx] = true;
-                instOrder.add(0, i);
-                dFS(i, visited, allVert, instOrder);
-            }
-        }
-
-        return instOrder;
+        return null;
     }
 
     /**
@@ -200,24 +154,7 @@ public class PackageManager {
     public List<String> toInstall(String newPkg, String installedPkg)
             throws CycleException, PackageNotFoundException {
 
-        // find out what packages were previously installed w/installedPkg
-        Set<String> prevInstal = new HashSet<String>(getInstallationOrder(installedPkg));
-
-        // find out all required packages for newPkg
-        Set<String> fullinstOrd = new HashSet<String>(getInstallationOrder(newPkg));
-
-        // Set<String> union = Set.symmetricDifference(prevInstal, instOrder);
-        // find what packages are common using the symetric difference of two sets
-        // packages in prevInstal are already installed
-        Set<String> symDiff = new HashSet<String>(prevInstal);
-        symDiff.addAll(fullinstOrd);
-        Set<String> temp = new HashSet<String>(prevInstal);
-        temp.retainAll(fullinstOrd); // removes everything not in fullinstOrd
-        symDiff.removeAll(temp); // removes common stuff between symDiff (prevInstall) and temp
-
-        List<String> installation = new ArrayList<String>(symDiff);
-
-        return installation;
+        return null;
     }
 
     /**
@@ -234,68 +171,10 @@ public class PackageManager {
      */
     public List<String> getInstallationOrderForAllPackages() throws CycleException {
         // Choose arbitrary starting vertex & do a topological ordering algorithm
-        List<String> allVert = new ArrayList<String>(graph.getAllVertices());
-        List<String> currEdge;
-        List<String> finOrder = new ArrayList<String>();
-        Stack<String> stack  = new Stack<String>();
-       
-        int num  = allVert.size();
-        
-        //at end of algo place the installation order using topological
-        String[] instOdr = new String[num];
-        boolean[] visited = new boolean[num];
-        int[] topological = new int[num];
-        
-        for(String i : allVert) {
-            currEdge = graph.getAdjacentVerticesOf(i);
-            if(!currEdge.isEmpty()) {
-                int pkgIndx = allVert.indexOf(i);
-                visited[pkgIndx] = true;
-                stack.push(i);
-            }
-        }
-        
-        while(!stack.empty()) {
-            String curr = stack.peek();
-            String succ = getNextSucc(curr, visited, allVert); //next successor of curr
-            
-            if(succ == null) {
-                curr = stack.pop();
-                int pkgIndx = allVert.indexOf(curr);
-                topological[pkgIndx] = num;
-                num--;
-            }
-            else {
-                int pkgIndx = allVert.indexOf(succ);
-                visited[pkgIndx] = true;
-                stack.push(succ);
-            }
-        }
-        
-//        int topoPos = topological[i%instOdr.length];
-//        System.out.println(topoPos);
-//        instOdr[topoPos%instOdr.length] = allVert.get(topological[i%instOdr.length]);
-        
-        for(int i = 0; i < 4; i++) {
-
-
-        }
-        
-        for(String i : instOdr)
-            System.out.println(i);
-        
-        return finOrder;
+        return null;
     }
 
     private String getNextSucc(String curr, boolean[] visited, List<String> allVert) {
-        // TODO Auto-generated method stub
-        List<String> edges = graph.getAdjacentVerticesOf(curr);
-        for(String i : edges) {
-            int idx = allVert.indexOf(i);
-            if(!visited[idx])
-                return i;
-        }
-        
         return null;
     }
 

@@ -239,15 +239,18 @@ public class Graph implements GraphADT {
     private class GraphNode<K> {
         private K vertex;
         private List<GraphNode<K>> edges;
+        private String mark;
         
         private GraphNode() {
             vertex = null;
             edges = new ArrayList<GraphNode<K>>();
+            mark = "UNVISITED";
         }
         
         private GraphNode(K vertex) {
             this.vertex = vertex;
             edges = new ArrayList<GraphNode<K>>();
+            mark = "UNVISITED";
         }
         
         private boolean contains(K vertex) {

@@ -123,12 +123,31 @@ public class PackageManager {
      */
     public List<String> getInstallationOrder(String pkg)
             throws CycleException, PackageNotFoundException {
-        return null;
+        
+        //Add to a set since they, by default, do not allow duplicate values
+        List<String> installation = new ArrayList<String>();
+        List<String> currDpn     = graph.getAdjacentVerticesOf(pkg);
+        
+        //Get dependencies finds the dependencies of this pkg and creates the installation list
+        //recursively
+        getDependencies(pkg, installation);
+                
+        //return everything inside of installation by creating a new ArrayList
+        return installation;
     }
 
-    private List<String> dFS(String pkg, boolean[] visited, List<String> allVert,
-            List<String> instOrder) {
-        return null;
+    private void getDependencies(String pkg, List<String> installation) {
+        //Get all the dependencies of the curr packages
+        List<String> currDep = graph.getAdjacentVerticesOf(pkg);
+        
+        //For each dependency find if it has any others
+        for(String i : currDep) {
+            getDependencies(i, installation);
+        }
+        
+        //Only add this package if it is not in the installation order
+        if(!installation.contains(pkg))
+            installation.add(pkg);
     }
 
     /**

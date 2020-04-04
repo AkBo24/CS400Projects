@@ -257,7 +257,7 @@ public class PackageManager {
         
         while(!stack.empty()) {
             String curr = stack.peek();
-            String succ = getNextSucc(curr); //next successor of curr
+            String succ = getNextSucc(curr, visited, allVert); //next successor of curr
             
             if(succ == null) {
                 curr = stack.pop();
@@ -272,22 +272,30 @@ public class PackageManager {
             }
         }
         
-        String curr;
-        int topPos;
-        for(int i = 0; i < instOdr.length; i++) {
-            topPos = topological[i];
-            curr = allVert.get(topPos);
-            instOdr[topPos] = curr;
+//        int topoPos = topological[i%instOdr.length];
+//        System.out.println(topoPos);
+//        instOdr[topoPos%instOdr.length] = allVert.get(topological[i%instOdr.length]);
+        
+        for(int i = 0; i < 4; i++) {
+
+
         }
         
         for(String i : instOdr)
-            finOrder.add(i);
+            System.out.println(i);
         
         return finOrder;
     }
 
-    private String getNextSucc(String curr) {
+    private String getNextSucc(String curr, boolean[] visited, List<String> allVert) {
         // TODO Auto-generated method stub
+        List<String> edges = graph.getAdjacentVerticesOf(curr);
+        for(String i : edges) {
+            int idx = allVert.indexOf(i);
+            if(!visited[idx])
+                return i;
+        }
+        
         return null;
     }
 

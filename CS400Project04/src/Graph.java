@@ -7,25 +7,25 @@ import java.util.Set;
 /**
  * Filename:   Graph.java
  * Project:    p4
- * Authors:    Akshay Bodla
+ * Authors:    
  * 
  * Directed and unweighted graph implementation
  */
 
+@SuppressWarnings("unused")
 public class Graph implements GraphADT {
-	
-    private Set<String>  verticies; //sets represent the edges between verticies in this graph
-    private List<String> edges;     //list representing the verticies in this graph
     
-	/*
-	 * Default no-argument constructor
-	 */ 
-	public Graph() {
-	    verticies = new HashSet<String>();
-		edges     = new ArrayList<String>();
-	}
+    private Set<GraphNode<String>> verticies;
+    
+    /*
+     * Default no-argument constructor
+     */ 
+    public Graph() {
+        verticies = new HashSet<GraphNode<String>>();
+    }
 
-	/**
+    
+    /**
      * Add new vertex to the graph.
      *
      * If vertex is null or already exists,
@@ -40,10 +40,12 @@ public class Graph implements GraphADT {
      */
     @Override
     public void addVertex(String vertex) {
-        // TODO Auto-generated method stub
-//        System.out.println(vertex == null || verticies.contains(vertex));
-        if(vertex == null || verticies.contains(vertex)) return;
-        verticies.add(vertex);
+        
+        if(vertex == null) return;
+        for(GraphNode<String> i : verticies)
+            if(i.contains(vertex)) return;
+        
+        verticies.add(new GraphNode<String>(vertex));
     }
 
     /**
@@ -63,10 +65,20 @@ public class Graph implements GraphADT {
     @Override
     public void removeVertex(String vertex) {
         // TODO Auto-generated method stub
-        if(vertex == null || !verticies.contains(vertex)) return;
-        verticies.remove(vertex); 
+        
+        if(vertex == null) return;
+        GraphNode<String> remove = null;
+        
+        for(GraphNode<String> i : verticies) {
+            if(i.contains(vertex))
+                remove = i;
+        }
+        
+        if(remove == null) return;
+        verticies.remove(remove);
     }
 
+    
     /**
      * Add the edge from vertex1 to vertex2
      * to this graph.  (edge is directed and unweighted)
@@ -89,17 +101,26 @@ public class Graph implements GraphADT {
     @Override
     public void addEdge(String vertex1, String vertex2) {
         // TODO Auto-generated method stub
-        if(vertex1 == null || vertex2 == null) 
-            return;
-        else if(!verticies.contains(vertex1) || !verticies.contains(vertex2))
+        if(vertex1 == null || vertex2 == null) return;
+        
+        this.addVertex(vertex1);
+        this.addVertex(vertex2);
+        
+        GraphNode<String> v1 = null;
+        GraphNode<String> v2 = null;
+        
+        for(GraphNode<String> i : verticies) {
+            if(i.contains(vertex1)) v1 = i;
+            if(i.contains(vertex2)) v2 = i;
+        }
+        
+        if(v1 == null || v2 == null || v1.edges.contains(v2)) 
             return;
         
-        String edge  = vertex1+vertex2;
-        if(edges.contains(edge)) return;
-        
-        edges.add(edge);
+        v1.addEdge(v2);
     }
 
+    
     /**
      * Remove the edge from vertex1 to vertex2
      * from this graph.  (edge is directed and unweighted)
@@ -118,14 +139,24 @@ public class Graph implements GraphADT {
     @Override
     public void removeEdge(String vertex1, String vertex2) {
         // TODO Auto-generated method stub
-        if(vertex1 == null || vertex2 == null) 
+        if (vertex1 == null || vertex2 == null)
             return;
-        else if(!verticies.contains(vertex1) || !verticies.contains(vertex2))
+
+        GraphNode<String> v1 = null;
+        GraphNode<String> v2 = null;
+
+        for (GraphNode<String> i : verticies) {
+            if (i.contains(vertex1))
+                v1 = i;
+            if (i.contains(vertex2))
+                v2 = i;
+        }
+        
+        if (v1 == null || v2 == null)
             return;
         
-        String edge  = vertex1+vertex2;
-        if(!edges.contains(edge)) return;
-        edges.remove(edge);
+
+        v1.removeEdge(v2);
     }
 
     /**
@@ -136,7 +167,13 @@ public class Graph implements GraphADT {
     @Override
     public Set<String> getAllVertices() {
         // TODO Auto-generated method stub
-        return verticies;
+        
+        Set<String> allVert = new HashSet<String>();
+        
+        for(GraphNode<String> i : verticies)
+            allVert.add(i.vertex);
+        
+        return allVert;
     }
 
     /**
@@ -155,16 +192,17 @@ public class Graph implements GraphADT {
     @Override
     public List<String> getAdjacentVerticesOf(String vertex) {
         // TODO Auto-generated method stub
+        GraphNode<String> v1 = null;
+        List<String> allEdges = new ArrayList<String>();
         
-        List<String> vEdges = new ArrayList<>();
-        
-        for(String i : edges) {
-            if(i.substring(0, 1).equals(vertex))
-                vEdges.add(i.substring(1));
-                
+        for(GraphNode<String> i : verticies) {
+            if(i.contains(vertex)) v1 = i;
         }
         
-        return vEdges;
+        for(GraphNode<String> i : v1.edges)
+            allEdges.add(i.vertex);
+        
+        return allEdges;
     }
 
     /**
@@ -174,7 +212,12 @@ public class Graph implements GraphADT {
     @Override
     public int size() {
         // TODO Auto-generated method stub
-        return edges.size();
+        int total = 0;
+        
+        for(GraphNode<String> i : verticies)
+            total += i.edges.size();
+        
+        return total;
     }
 
     /**
@@ -187,4 +230,36 @@ public class Graph implements GraphADT {
         return verticies.size();
     }
 
+    /**
+     * Returns the number of vertices in this graph.
+     * @return number of vertices in graph.
+     */
+    // TODO: implement all the methods declared in GraphADT
+    @SuppressWarnings("unused")
+    private class GraphNode<K> {
+        private K vertex;
+        private List<GraphNode<K>> edges;
+        
+        private GraphNode() {
+            vertex = null;
+            edges = new ArrayList<GraphNode<K>>();
+        }
+        
+        private GraphNode(K vertex) {
+            this.vertex = vertex;
+            edges = new ArrayList<GraphNode<K>>();
+        }
+        
+        private boolean contains(K vertex) {
+            return this.vertex.equals(vertex);
+        }
+        
+        private void addEdge(GraphNode<K> vertex) {
+            edges.add(vertex);
+        }
+        
+        private void removeEdge(GraphNode<K> vertex) {
+            edges.remove(vertex);
+        }
+    }
 }

@@ -40,6 +40,7 @@ import org.json.simple.parser.ParseException;
 public class PackageManager {
 
     private Graph graph;
+    private List<String> graphVerts;
     private JSONArray getPacks;
     private JSONObject jo;
 
@@ -48,6 +49,7 @@ public class PackageManager {
      */
     public PackageManager() {
         graph = new Graph();
+        graphVerts = new ArrayList<String>();
         getPacks = new JSONArray();
         jo = null;
     }
@@ -73,8 +75,8 @@ public class PackageManager {
         Set<String> verticies = getAllPackages();
         for(String i : verticies) {
             graph.addVertex(i);
+            graphVerts.add(i);
         }
-        
     }
 
     /**
@@ -123,6 +125,13 @@ public class PackageManager {
      */
     public List<String> getInstallationOrder(String pkg)
             throws CycleException, PackageNotFoundException {
+        boolean isFound = false;
+        
+        for(String i : graphVerts) {
+            if(i.equals(pkg)) isFound = true;
+        }
+        
+        if(!isFound) throw new PackageNotFoundException();
         
         //Add to a set since they, by default, do not allow duplicate values
         List<String> installation = new ArrayList<String>();
@@ -131,7 +140,7 @@ public class PackageManager {
         //Get dependencies finds the dependencies of this pkg and creates the installation list
         //recursively
         getDependencies(pkg, installation);
-                
+        graph.resetMarks(); //Sets each mark to "UNVISITED"
         //return everything inside of installation by creating a new ArrayList
         return installation;
     }
@@ -179,6 +188,18 @@ public class PackageManager {
      */
     public List<String> toInstall(String newPkg, String installedPkg)
             throws CycleException, PackageNotFoundException {
+        
+        boolean nPFound = false;
+        boolean iPFound = false;
+        
+        for(String i : graphVerts) {
+            if(i.equals(newPkg)) nPFound = true;
+            if(i.equals(installedPkg)) iPFound = true;
+        }
+        
+        if(!nPFound && !iPFound) throw new PackageNotFoundException();
+        
+        
         //Get two sets for each installation then do a symmetric difference to 
         //eliminate the common packages (since they are already installed)
         //the packages left over are the unique dependencies of newPkg
@@ -211,7 +232,13 @@ public class PackageManager {
      */
     public List<String> getInstallationOrderForAllPackages() throws CycleException {
         // Choose arbitrary starting vertex & do a topological ordering algorithm
-        return null;
+        List<String> installOrder = new ArrayList<String>();
+        
+        //Iterate through each vertex (using graphVerts) and find its installation path
+        for(String i : graphVerts)
+            getDependencies(i, installOrder);
+        
+        return installOrder;
     }
 
     /**
@@ -229,7 +256,29 @@ public class PackageManager {
      * @throws CycleException if you encounter a cycle in the graph
      */
     public String getPackageWithMaxDependencies() throws CycleException {
-        return "";
+        int[] numDep = new int[this.graphVerts.size()];
+        int   maxDep = 0, maxPos = 0;
+        
+        List<String> currDepen;
+        
+        for(int i = 0 ; i < graphVerts.size(); i++) {
+            try {
+                numDep[i] = getInstallationOrder(graphVerts.get(i)).size();
+            } catch (PackageNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        
+        //iterate through numDep to find the package w/the largest dependency
+        for(int i = 0; i < numDep.length; i++) {
+            if(Math.max(maxDep, numDep[i]) == numDep[i]) {
+                maxDep = numDep[i];
+                maxPos = i;
+            }
+        }
+        
+        return graphVerts.get(maxPos);
     }
 
     public static void main(String[] args) {
@@ -241,9 +290,11 @@ public class PackageManager {
             manager.constructGraph(filepath);
 
             manager.getInstallationOrder("A");
-            manager.toInstall("A", "C");
+//            manager.toInstall("A", "C");
             
             manager.getInstallationOrderForAllPackages();
+            
+            manager.getPackageWithMaxDependencies();
 
         } catch (IOException | ParseException e) {
             // TODO Auto-generated catch block

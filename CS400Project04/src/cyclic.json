@@ -6,7 +6,7 @@
     	},
     	{
        		"name": "B",
-        	"dependencies": ["A"]
+        	"dependencies": ["A","C"]
     	}
     ]
 }

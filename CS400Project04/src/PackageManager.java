@@ -126,7 +126,7 @@ public class PackageManager {
     public List<String> getInstallationOrder(String pkg)
             throws CycleException, PackageNotFoundException {
         boolean isFound = false;
-        
+
         for(String i : graphVerts) {
             if(i.equals(pkg)) isFound = true;
         }
@@ -212,9 +212,7 @@ public class PackageManager {
         Set<String> temp = new HashSet<String>(alreadyInst);
         symmetricDiff.retainAll(toInstall);
         symmetricDiff.removeAll(temp);
-        
-        System.out.println(symmetricDiff);
-        
+                
         return new ArrayList<String>(symmetricDiff);
     }
 

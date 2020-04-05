@@ -1,8 +1,4 @@
 import static org.junit.jupiter.api.Assertions.*;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
@@ -11,6 +7,7 @@ class PackageManagerTest {
     
     PackageManager manager;
     PackageManager cyclic;
+    PackageManager large;
     
     // TODO: add code that runs before each test method
     @Before
@@ -21,6 +18,12 @@ class PackageManagerTest {
             manager.constructGraph(filepath);
             
             cyclic = new PackageManager();
+            filepath = "/Users/akshaybodla/Documents/GitHub/CS400Projects/CS400Project04/src/cyclic.json";
+            cyclic.constructGraph(filepath);
+            
+            large = new PackageManager();
+            filepath = "/Users/akshaybodla/Documents/GitHub/CS400Projects/CS400Project04/src/large_dependencies.json";
+            large.constructGraph(filepath);
             
         }
         catch(Exception e) {
@@ -129,19 +132,19 @@ class PackageManagerTest {
         }
 
     }
+
     
     @Test
-    void test05(){
-        
+    void test05_test_cyclic_graph(){
         try {
             setUp();
-            assertEquals("[D, B, C, A]",manager.getInstallationOrderForAllPackages().toString());
+            assertEquals("[D, B, C, A]",cyclic.getInstallationOrderForAllPackages().toString());
         } catch (CycleException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            assert(true);
         } catch (PackageNotFoundException e) {
             // TODO Auto-generated catch block
-            assert(true);
+            e.printStackTrace();
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -149,4 +152,75 @@ class PackageManagerTest {
 
     }
     
+    @Test
+    void test06_cyclic_graph_for_all_packages(){
+        try {
+            setUp();
+            assertEquals("[D, B, C, A]", cyclic.getInstallationOrderForAllPackages().toString());
+        } catch (CycleException e) {
+            // TODO Auto-generated catch block
+            assert(true);
+        } catch (PackageNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+    
+    @Test
+    void test07(){
+        try {
+            setUp();
+            assertEquals("[D, B, C, A]", cyclic.getInstallationOrderForAllPackages().toString());
+        } catch (CycleException e) {
+            // TODO Auto-generated catch block
+            assert(true);
+        } catch (PackageNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+    
+    @Test
+    void test08_get_max_depdendency(){
+        try {
+            setUp();
+            assertEquals("A",manager.getPackageWithMaxDependencies());
+        } catch (CycleException e) {
+            // TODO Auto-generated catch block
+            assert(true);
+        } catch (PackageNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+    
+    @Test
+    void test09_construct_large_graph(){
+        try {
+            setUp();
+            assertEquals("[E, L, B, G, F, D, Z, C, A]", large.getInstallationOrderForAllPackages().toString());
+        } catch (CycleException e) {
+            // TODO Auto-generated catch block
+            assert(true);
+        } catch (PackageNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
 }

@@ -43,6 +43,10 @@ public class PackageManager {
     private List<String> graphVerts;
     private JSONArray getPacks;
     private JSONObject jo;
+    
+    //Not instantiated in constructor on purpose,
+    //we do not know how big the graph is yet
+    private String[] visited;
 
     /*
      * Package Manager default no-argument constructor.
@@ -77,6 +81,11 @@ public class PackageManager {
             graph.addVertex(i);
             graphVerts.add(i);
         }
+        
+        //Construct the visited array list
+        visited = new String[graphVerts.size()];
+        for(int i = 0; i < visited.length; i++)
+            visited[i] = "UNVISITED";
     }
 
     /**
@@ -140,7 +149,11 @@ public class PackageManager {
         //Get dependencies finds the dependencies of this pkg and creates the installation list
         //recursively
         getDependencies(pkg, installation);
-        graph.resetMarks(); //Sets each mark to "UNVISITED"
+        
+        //reset the visited array
+        for(int i = 0; i < visited.length; i++)
+            visited[i] = "UNVISITED";
+        
         //return everything inside of installation by creating a new ArrayList
         return installation;
     }
@@ -149,17 +162,21 @@ public class PackageManager {
         //Get all the dependencies of the curr packages
         List<String> currDep = graph.getAdjacentVerticesOf(pkg);
         
-        graph.setMark(pkg, "IN PROGRESS");
+        int pkgIndx = graphVerts.indexOf(pkg);
+        visited[pkgIndx] = "IN PROGRESS";
+//        graph.setMark(pkg, "IN PROGRESS");
         
         //For each dependency find if it has any others
         for(String i : currDep) {
-            
-            if(graph.getMark(i).equals("IN PROGRESS")) throw new CycleException();
+            int iStatus = graphVerts.indexOf(i);
+//            if(graph.getMark(i).equals("IN PROGRESS")) throw new CycleException();
+            if(visited[iStatus].equals("IN PROGRESS")) throw new CycleException();
             
             getDependencies(i, installation);
         }
         
-        graph.setMark(pkg, "VISITED");
+//        graph.setMark(pkg, "VISITED");
+        visited[pkgIndx] = "VISITED";
         
         //Only add this package if it is not in the installation order
         if(!installation.contains(pkg))

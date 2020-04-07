@@ -230,23 +230,23 @@ public class Graph implements GraphADT {
         return verticies.size();
     }
 
-    public void resetMarks() {
-        for(GraphNode<String> i : this.verticies)
-            i.mark = "UNVISITED";
-    }
-    
-    public String getMark(String pkg) {
-        for(GraphNode<String> i : verticies) {
-            if(i.contains(pkg)) return i.mark;
-        }
-        return "package not found";
-    }
-    
-    public void setMark(String pkg, String mark) {
-        for(GraphNode<String> i : verticies) {
-            if(i.contains(pkg)) i.mark = mark;;
-        }
-    }
+//    public void resetMarks() {
+//        for(GraphNode<String> i : this.verticies)
+//            i.mark = "UNVISITED";
+//    }
+//    
+//    public String getMark(String pkg) {
+//        for(GraphNode<String> i : verticies) {
+//            if(i.contains(pkg)) return i.mark;
+//        }
+//        return "package not found";
+//    }
+//    
+//    public void setMark(String pkg, String mark) {
+//        for(GraphNode<String> i : verticies) {
+//            if(i.contains(pkg)) i.mark = mark;;
+//        }
+//    }
      
     /**
      * Returns the number of vertices in this graph.

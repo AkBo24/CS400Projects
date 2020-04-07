@@ -46,8 +46,8 @@ public class Graph implements GraphADT {
         if(vertex == null) return;
         
         //dont do anything if the vertex exists in set
-//        for(GraphNode<String> i : verticies)
-//            if(i.contains(vertex)) return;
+        for(GraphNode<String> i : verticies)
+            if(i.contains(vertex)) return;
         
         verticies.add(new GraphNode<String>(vertex));
     }
@@ -73,18 +73,16 @@ public class Graph implements GraphADT {
         if(vertex == null) return;
         GraphNode<String> remove = null;
         
-        //
         for(GraphNode<String> i : verticies) {
-            
             //if this vertex is found remove it
             if(i.contains(vertex))
-                verticies.remove(i);
+                remove = i;
         }
         
-//        if(remove == null) return;
-//        verticies.remove(remove);
-    }
+        if(remove == null) return;
+        verticies.remove(remove);
 
+    }
     
     /**
      * Add the edge from vertex1 to vertex2

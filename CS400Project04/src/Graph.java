@@ -15,6 +15,8 @@ import java.util.Set;
 @SuppressWarnings("unused")
 public class Graph implements GraphADT {
     
+    //the set will store graphnodes which have 
+    //fields for edges etc
     private Set<GraphNode<String>> verticies;
     
     /*
@@ -42,8 +44,10 @@ public class Graph implements GraphADT {
     public void addVertex(String vertex) {
         
         if(vertex == null) return;
-        for(GraphNode<String> i : verticies)
-            if(i.contains(vertex)) return;
+        
+        //dont do anything if the vertex exists in set
+//        for(GraphNode<String> i : verticies)
+//            if(i.contains(vertex)) return;
         
         verticies.add(new GraphNode<String>(vertex));
     }
@@ -69,13 +73,16 @@ public class Graph implements GraphADT {
         if(vertex == null) return;
         GraphNode<String> remove = null;
         
+        //
         for(GraphNode<String> i : verticies) {
+            
+            //if this vertex is found remove it
             if(i.contains(vertex))
-                remove = i;
+                verticies.remove(i);
         }
         
-        if(remove == null) return;
-        verticies.remove(remove);
+//        if(remove == null) return;
+//        verticies.remove(remove);
     }
 
     
@@ -103,17 +110,20 @@ public class Graph implements GraphADT {
         // TODO Auto-generated method stub
         if(vertex1 == null || vertex2 == null) return;
         
+        //Verticies is a set so it will not allow duplicate nodes 
         this.addVertex(vertex1);
         this.addVertex(vertex2);
         
         GraphNode<String> v1 = null;
         GraphNode<String> v2 = null;
         
+        //find the graphnode representing vertex1  and vertex2
         for(GraphNode<String> i : verticies) {
             if(i.contains(vertex1)) v1 = i;
             if(i.contains(vertex2)) v2 = i;
         }
         
+        //if v1 already points to v2, do nothing: edges is a list and will allow duplicates
         if(v1 == null || v2 == null || v1.edges.contains(v2)) 
             return;
         
@@ -145,17 +155,16 @@ public class Graph implements GraphADT {
         GraphNode<String> v1 = null;
         GraphNode<String> v2 = null;
 
+        //find the graphnode representing vertex1 and vertex2
         for (GraphNode<String> i : verticies) {
-            if (i.contains(vertex1))
-                v1 = i;
-            if (i.contains(vertex2))
-                v2 = i;
+            if (i.contains(vertex1)) v1 = i;
+            if (i.contains(vertex2)) v2 = i;
         }
         
         if (v1 == null || v2 == null)
             return;
-        
 
+        //remove the edge if both exist
         v1.removeEdge(v2);
     }
 
@@ -168,6 +177,7 @@ public class Graph implements GraphADT {
     public Set<String> getAllVertices() {
         // TODO Auto-generated method stub
         
+        //Iterate through verticies and add each vertex to set
         Set<String> allVert = new HashSet<String>();
         
         for(GraphNode<String> i : verticies)
@@ -195,13 +205,15 @@ public class Graph implements GraphADT {
         GraphNode<String> v1 = null;
         List<String> allEdges = new ArrayList<String>();
         
-        for(GraphNode<String> i : verticies) {
+        //iterate through verticies to find the node represented by vertex
+        for(GraphNode<String> i : verticies)
             if(i.contains(vertex)) v1 = i;
-        }
         
+        //iterate through the edges of v1 and add it to allEdges
         for(GraphNode<String> i : v1.edges)
             allEdges.add(i.vertex);
         
+        //allEdges now has all the edges of vertex
         return allEdges;
     }
 
@@ -212,6 +224,8 @@ public class Graph implements GraphADT {
     @Override
     public int size() {
         // TODO Auto-generated method stub
+        
+        //get the size of the edge list inside each graphnode and add it to total
         int total = 0;
         
         for(GraphNode<String> i : verticies)
@@ -229,24 +243,6 @@ public class Graph implements GraphADT {
         // TODO Auto-generated method stub
         return verticies.size();
     }
-
-//    public void resetMarks() {
-//        for(GraphNode<String> i : this.verticies)
-//            i.mark = "UNVISITED";
-//    }
-//    
-//    public String getMark(String pkg) {
-//        for(GraphNode<String> i : verticies) {
-//            if(i.contains(pkg)) return i.mark;
-//        }
-//        return "package not found";
-//    }
-//    
-//    public void setMark(String pkg, String mark) {
-//        for(GraphNode<String> i : verticies) {
-//            if(i.contains(pkg)) i.mark = mark;;
-//        }
-//    }
      
     /**
      * Returns the number of vertices in this graph.

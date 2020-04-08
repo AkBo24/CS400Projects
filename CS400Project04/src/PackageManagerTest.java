@@ -3,6 +3,35 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
 
+/**
+ * PackageManagerTest.java created by akshaybodla on MacBook Pro in CS400Project04
+ * 
+ * Author: Akshay Bodla (bodla@wisc.edu)
+ * Date: @date
+ * 
+ * Course: CS400
+ * Semester: Spring 2020
+ * Lecture: 001
+ * 
+ * IDE: Eclipse IDE for Java Developers
+ * 
+ * Version: 2019-06 (4.12.0)
+ * Build id: 20190614-1200
+ * 
+ * Device :  Akshay's Macbook Pro
+ * OS     :  macOS High Sierra
+ * Version: Version 10.13.6
+ * 
+ * List Collaborators: N/A
+ * 
+ * Other Credits: N/A
+ */
+
+/**
+ * Tests the functionality of PackageManager.java
+ * @author akshaybodla
+ *
+ */
 class PackageManagerTest {
     
     PackageManager manager;

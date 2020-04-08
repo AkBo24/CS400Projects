@@ -36,13 +36,25 @@ import org.json.simple.parser.ParseException;
  * classes.
  */
 
+/**
+ * {@summary} This class utilizes the @see Graph.java class to determine in what order
+ * a package needs to be downloaded
+ * 
+ * Also provides other package functionalities
+ * @author akshaybodla
+ *
+ */
 @SuppressWarnings("unused")
 public class PackageManager {
 
-    private Graph graph;
-    private List<String> graphVerts;
-    private JSONArray getPacks;
+    private Graph graph; //The graph a package requires
+    private List<String> graphVerts; //a local copy of the all the nodes, helpful for algorithms
+    private JSONArray getPacks; //finds all of the packages in this json
     private JSONObject jo;
+    
+    //Not instantiated in constructor on purpose,
+    //we do not know how big the graph is yet
+    private String[] visited;
 
     /*
      * Package Manager default no-argument constructor.
@@ -66,17 +78,26 @@ public class PackageManager {
      */
     public void constructGraph(String jsonFilepath)
             throws FileNotFoundException, IOException, ParseException {
-
+        
+        //parse the json file
         Object obj = new JSONParser().parse(new FileReader(jsonFilepath));
-
+        
+        //cast to a json object and get get the dependencies into an array
         jo = (JSONObject) obj;
         getPacks = (JSONArray) jo.get("packages");
 
+        //seperate the dependencies and add it to graph and graphVerts
         Set<String> verticies = getAllPackages();
         for(String i : verticies) {
             graph.addVertex(i);
             graphVerts.add(i);
         }
+        
+        //Construct the visited array list
+        //initialize each position to "unvisisted"
+        visited = new String[graphVerts.size()];
+        for(int i = 0; i < visited.length; i++)
+            visited[i] = "UNVISITED";
     }
 
     /**
@@ -87,14 +108,22 @@ public class PackageManager {
      * @return Set<String> of all the packages
      */
     public Set<String> getAllPackages() {
+        
+        //iterate through graphVerts and add it to packages
+        //use a set so we dont add a duplicate
         Set<String> packages = new HashSet<String>();
         
+        //for each element in getPacks get the name of the package
+        //and add it to packages
         for(int i = 0; i < getPacks.size(); i++) {
             JSONObject currPkg = (JSONObject) getPacks.get(i);
             String pkgName = (String) currPkg.get("name");
             packages.add(pkgName);
+            
+            //each package has a dependency array so iterate through that
             JSONArray dependencies = (JSONArray) currPkg.get("dependencies");
             
+            //iterate through the dependencies array and add each dependency of pkgName
             for(int j = 0; j < dependencies.size(); j++) {
                 String currDpncy = (String) dependencies.get(j);
                 packages.add(currDpncy);
@@ -125,6 +154,9 @@ public class PackageManager {
      */
     public List<String> getInstallationOrder(String pkg)
             throws CycleException, PackageNotFoundException {
+        
+        //first check to see if this pkg is in the graph
+        //throw package not found if it is not found
         boolean isFound = false;
 
         for(String i : graphVerts) {
@@ -138,9 +170,13 @@ public class PackageManager {
         List<String> currDpn      = graph.getAdjacentVerticesOf(pkg);
         
         //Get dependencies finds the dependencies of this pkg and creates the installation list
-        //recursively
+        //recursively (uses a modified DFS algorithm)
         getDependencies(pkg, installation);
-        graph.resetMarks(); //Sets each mark to "UNVISITED"
+        
+        //reset the visited array
+        for(int i = 0; i < visited.length; i++)
+            visited[i] = "UNVISITED";
+        
         //return everything inside of installation by creating a new ArrayList
         return installation;
     }
@@ -149,17 +185,22 @@ public class PackageManager {
         //Get all the dependencies of the curr packages
         List<String> currDep = graph.getAdjacentVerticesOf(pkg);
         
-        graph.setMark(pkg, "IN PROGRESS");
+        int pkgIndx = graphVerts.indexOf(pkg);
+        visited[pkgIndx] = "IN PROGRESS";
         
         //For each dependency find if it has any others
         for(String i : currDep) {
+            int iStatus = graphVerts.indexOf(i);
             
-            if(graph.getMark(i).equals("IN PROGRESS")) throw new CycleException();
+            //Dependencies with the "in progress" flag indicate there is a cycle 
+            //inside of this package list
+            if(visited[iStatus].equals("IN PROGRESS")) throw new CycleException();
             
+            //Find the dependencies the package "i" has
             getDependencies(i, installation);
         }
-        
-        graph.setMark(pkg, "VISITED");
+       
+        visited[pkgIndx] = "VISITED";
         
         //Only add this package if it is not in the installation order
         if(!installation.contains(pkg))
@@ -189,6 +230,8 @@ public class PackageManager {
     public List<String> toInstall(String newPkg, String installedPkg)
             throws CycleException, PackageNotFoundException {
         
+        //first check that each package is inside the graph
+        //if one of them aren't throw package not found
         boolean nPFound = false;
         boolean iPFound = false;
         
@@ -207,6 +250,7 @@ public class PackageManager {
         Set<String> toInstall   = new HashSet<String>(getInstallationOrder(newPkg));
         
         //Get the symmetric difference of alreadyInst and toInstall
+        //this will leave the packages left to install from getInstallationOrder(newPkg)
         Set<String> symmetricDiff = new HashSet<String>(alreadyInst);
         symmetricDiff.addAll(toInstall);
         Set<String> temp = new HashSet<String>(alreadyInst);
@@ -233,6 +277,7 @@ public class PackageManager {
         List<String> installOrder = new ArrayList<String>();
         
         //Iterate through each vertex (using graphVerts) and find its installation path
+        //add each to install order
         for(String i : graphVerts)
             getDependencies(i, installOrder);
         
@@ -254,56 +299,32 @@ public class PackageManager {
      * @throws CycleException if you encounter a cycle in the graph
      */
     public String getPackageWithMaxDependencies() throws CycleException {
-        int[] numDep = new int[this.graphVerts.size()];
-        int   maxDep = 0, maxPos = 0;
-        
-        List<String> currDepen;
+        int[] numDep = new int[this.graphVerts.size()]; //hold the number of dependencies of each vertex
+        int   maxDep = 0, maxPos = 0; //used later to store the max number of dependencies
         
         for(int i = 0 ; i < graphVerts.size(); i++) {
             try {
+                //for each dependency get the installation order and the size of the
+                //returned list
                 numDep[i] = getInstallationOrder(graphVerts.get(i)).size();
             } catch (PackageNotFoundException e) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
             }
         }
         
         //iterate through numDep to find the package w/the largest dependency
         for(int i = 0; i < numDep.length; i++) {
+            
+            //if the package represented by numDep[i] is larger than the curr num of Dep 
+            //replace it with the current dependency
             if(Math.max(maxDep, numDep[i]) == numDep[i]) {
                 maxDep = numDep[i];
                 maxPos = i;
             }
         }
         
+        //return the package with the largest number of dependencies
         return graphVerts.get(maxPos);
-    }
-
-    public static void main(String[] args) {
-        System.out.println("PackageManager.main()");
-        PackageManager manager = new PackageManager();
-
-        try {
-            String filepath = "/Users/akshaybodla/Documents/GitHub/CS400Projects/CS400Project04/src/shared_dependencies.json";
-            manager.constructGraph(filepath);
-
-            manager.getInstallationOrder("A");
-//            manager.toInstall("A", "C");
-            
-            manager.getInstallationOrderForAllPackages();
-            
-            manager.getPackageWithMaxDependencies();
-
-        } catch (IOException | ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (CycleException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (PackageNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
     }
 
 }

@@ -1,5 +1,7 @@
 package application;
 
+import java.io.FileInputStream;
+
 /**
  * Main.java created by akshaybodla on MacBook Pro in CS400Project01
  * 
@@ -33,6 +35,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
@@ -61,10 +65,15 @@ public class Main extends Application {
         HBox h1 = new HBox(); 
         h1.getChildren().add(firstProg);
         
+        //Create a drop box for users to choose deserts from
         ObservableList<String> options = FXCollections.observableArrayList 
                 ("Cheesecake", "Brownie Sundae", "Smoothie");
         
         ComboBox<String> cb = new ComboBox<String>(options);
+        
+        //Add an image!
+        Image img = new Image(new FileInputStream("pusheen.jpg"));
+        ImageView imgView = new ImageView(img);
         
         
         //Add hbox & label to a scene

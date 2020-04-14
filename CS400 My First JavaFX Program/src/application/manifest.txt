@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Created-By: akshay
+Class-Path: /Users/akshaybodla/javafx-sdk-11.0.2/lib
+Main-Class: Main

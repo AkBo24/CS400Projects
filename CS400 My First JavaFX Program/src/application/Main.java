@@ -1,7 +1,5 @@
 package application;
 
-import java.io.FileInputStream;
-
 /**
  * Main.java created by akshaybodla on MacBook Pro in CS400Project01
  * 
@@ -51,8 +49,8 @@ public class Main extends Application {
     // NOTE: this.getParameters().getRaw() will get these also
     private List<String> args;
 
-    private static final int WINDOW_WIDTH = 300;
-    private static final int WINDOW_HEIGHT = 200;
+    private static final int WINDOW_WIDTH = 700;
+    private static final int WINDOW_HEIGHT = 500;
     private static final String APP_TITLE = "JavaFX Program";
     
     @Override
@@ -72,7 +70,7 @@ public class Main extends Application {
         ComboBox<String> cb = new ComboBox<String>(options);
         
         //Add an image!
-        Image img = new Image(new FileInputStream("pusheen.jpg"));
+        Image img = new Image("/application/face.png");
         ImageView imgView = new ImageView(img);
         
         
@@ -80,6 +78,8 @@ public class Main extends Application {
         BorderPane bp = new BorderPane();
         bp.setTop(h1);
         bp.setLeft(cb);
+        bp.setCenter(imgView);
+        
         Scene mainScene = new Scene(bp, WINDOW_WIDTH, WINDOW_HEIGHT);
         
         primaryStage.setTitle(APP_TITLE);

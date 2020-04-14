@@ -31,8 +31,10 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -49,7 +51,7 @@ public class Main extends Application {
     // NOTE: this.getParameters().getRaw() will get these also
     private List<String> args;
 
-    private static final int WINDOW_WIDTH = 700;
+    private static final int WINDOW_WIDTH = 950;
     private static final int WINDOW_HEIGHT = 500;
     private static final String APP_TITLE = "JavaFX Program";
     
@@ -58,10 +60,6 @@ public class Main extends Application {
 
         //label to be added at the top of a border pane
         Label firstProg = new Label("CS400 My First JavaFX Program");
-        
-        //add the label to a box
-        HBox h1 = new HBox(); 
-        h1.getChildren().add(firstProg);
         
         //Create a drop box for users to choose deserts from
         ObservableList<String> options = FXCollections.observableArrayList 
@@ -73,12 +71,34 @@ public class Main extends Application {
         Image img = new Image("/application/face.png");
         ImageView imgView = new ImageView(img);
         
+        //Add a button!
+        Button done = new Button("Done");
+        
+        //Close this window when clicking the done button using a lambda expression
+        done.setOnAction(
+                e -> {
+                    Stage thisStage = (Stage) done.getScene().getWindow();
+                    thisStage.close();
+                }
+         );
+        
+        //A textfield!
+        TextField someField = new TextField();
+        someField.setPromptText("What's your current hobby?");
+        someField.setMaxWidth(100);
+        
+        
+        //Create a layout manager and the label
+        HBox h1 = new HBox(); 
+        h1.getChildren().add(firstProg);
         
         //Add hbox & label to a scene
         BorderPane bp = new BorderPane();
         bp.setTop(h1);
         bp.setLeft(cb);
         bp.setCenter(imgView);
+        bp.setBottom(done);
+        bp.setRight(someField);
         
         Scene mainScene = new Scene(bp, WINDOW_WIDTH, WINDOW_HEIGHT);
         
